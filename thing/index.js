@@ -309,7 +309,7 @@ function thingShadowsClient( deviceOptions, thingShadowOptions ) {
        that.emit( 'offline' );
      });
    device.on('error', function(error) {
-       that.emit( 'error' );
+       that.emit( 'error', error);
      });
    device.on('message', function(topic, payload) {
 
