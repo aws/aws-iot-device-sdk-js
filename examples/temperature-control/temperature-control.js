@@ -20,9 +20,9 @@
 //app deps
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const thingShadow = require('..').thingShadow;
-const isUndefined = require('../common/lib/is-undefined');
-const cmdLineProcess   = require('./lib/cmdline');
+const thingShadow = require('../..').thingShadow;
+const isUndefined = require('../../common/lib/is-undefined');
+const cmdLineProcess   = require('../commonLib/cmdline');
 
 
 function processTest( args, argsRemaining ) {

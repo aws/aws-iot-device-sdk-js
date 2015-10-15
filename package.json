@@ -28,8 +28,6 @@
   "keywords" : ["api", "amazon", "aws", "iot", "mqtt"],
   "dependencies": {
     "mqtt": "1.4.3",
-    "minimist": "1.2.0",
-    "blessed": "0.1.81",
-    "blessed-contrib": "2.3.3"
+    "minimist": "1.2.0"
   }
 }
