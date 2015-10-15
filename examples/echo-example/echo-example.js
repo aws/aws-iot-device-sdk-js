@@ -18,9 +18,9 @@
 //npm deps
 
 //app deps
-const thingShadow = require('..').thingShadow;
-const isUndefined = require('../common/lib/is-undefined');
-const cmdLineProcess   = require('./lib/cmdline');
+const thingShadow = require('.../..').thingShadow;
+const isUndefined = require('../../common/lib/is-undefined');
+const cmdLineProcess   = require('../commonLib/cmdline');
 
 //begin module
 

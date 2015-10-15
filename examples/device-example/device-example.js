@@ -18,8 +18,8 @@
 //npm deps
 
 //app deps
-const deviceModule   = require('..').device;
-const cmdLineProcess = require('./lib/cmdline');
+const deviceModule   = require('../..').device;
+const cmdLineProcess = require('../commonLib/cmdline');
 
 //begin module
 
