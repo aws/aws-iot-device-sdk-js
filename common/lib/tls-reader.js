@@ -42,9 +42,9 @@ module.exports = function(options) {
     throw new Error(exceptions.INVALID_CA_PATH_OPTION);
   }
   //parse pem files
-  options.key = fs.readFileSync(options.keyPath);
-  options.cert = fs.readFileSync(options.certPath);
-  options.ca = fs.readFileSync(options.caPath);
+  options.key  = Buffer.isBuffer(options.keyPath) ? options.keyPath:fs.readFileSync(options.keyPath);
+  options.cert = Buffer.isBuffer(options.certPath) ? options.certPath:fs.readFileSync(options.certPath);
+  options.ca   = Buffer.isBuffer(options.caPath) ? options.caPath:fs.readFileSync(options.caPath);
 
   // request certificate from partner
   options.requestCert = true;
