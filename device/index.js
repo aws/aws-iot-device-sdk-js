@@ -48,7 +48,12 @@ module.exports = function(options) {
   {
      options.port = 8883;
   }
-  options.protocol = 'mqtts';
+
+  // set protocol
+  if (isUndefined(options.protocol))
+  {
+     options.protocol = 'mqtts';
+  }
   
   if (isUndefined(options.host))
   {
@@ -63,7 +68,10 @@ module.exports = function(options) {
   }
 
   //read and map certificates
-  tlsReader(options);
+  if (options.protocol == 'mqtts')
+  {
+     tlsReader(options);
+  }
 
   if ((!isUndefined(options)) && (options.debug===true))
   {
