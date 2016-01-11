@@ -136,14 +136,13 @@ thingShadows.on('status',
 
 thingShadows.on('delta', 
     function(thingName, stateObject) {
-       console.log('received delta '+' on '+thingName+': '+
+       console.log('received delta on '+thingName+': '+
                    JSON.stringify(stateObject));
     });
 
 thingShadows.on('timeout',
     function(thingName, clientToken) {
-       console.log('received timeout '+' on '+operation+': '+
-                   clientToken);
+       console.log('received timeout on operation with token: '+clientToken);
     });
 ```
 
