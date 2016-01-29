@@ -16,8 +16,7 @@
 //node.js deps
 
 //npm deps
-const mqtt   = require('mqtt');
-const crypto = require('crypto-js');
+const mqtt = require('mqtt');
 
 //app deps
 const exceptions = require('./lib/exceptions'),
@@ -27,229 +26,54 @@ const exceptions = require('./lib/exceptions'),
 //begin module
 const reconnectPeriod = 3 * 1000;
 
-function makeTwoDigits( n ) {
-   if (n > 9)
-   {
-      return n;
-   }
-   else
-   {
-      return '0' + n;
-   }
-}
-
-function getDateTimeString() {
-   var d = new Date();
-
-//
-// The additional ''s are used to force JavaScript to interpret the
-// '+' operator as string concatenation rather than arithmetic.
-//
-   return d.getUTCFullYear() + '' +
-             makeTwoDigits(d.getUTCMonth()+1) + '' +
-             makeTwoDigits(d.getUTCDate()) + 'T' + '' +
-             makeTwoDigits(d.getUTCHours()) + '' +
-             makeTwoDigits(d.getUTCMinutes()) +  '' +
-             makeTwoDigits(d.getUTCSeconds()) + 'Z';
-}
-
-function getDateString( dateTimeString ) {
-   return dateTimeString.substring(0, dateTimeString.indexOf('T'));
-}
-
-function getSignatureKey(key, dateStamp, regionName, serviceName) {
-   var kDate = crypto.HmacSHA256(dateStamp, 'AWS4' + key, { asBytes: true});
-   var kRegion = crypto.HmacSHA256(regionName, kDate, { asBytes: true });
-   var kService =crypto.HmacSHA256(serviceName, kRegion, { asBytes: true });
-   var kSigning = crypto.HmacSHA256('aws4_request', kService, { asBytes: true });
-   return kSigning;
-}
-
-function signUrl(method, scheme, hostname, path, queryParams, accessId, secretKey, 
-                 region, serviceName, payload, today, now, debug ) {
-
-   var signedHeaders = 'host';
-
-   var canonicalHeaders = 'host:' + hostname + '\n';
-
-   var canonicalRequest = method + '\n' + // method
-       path + '\n' + // path
-       queryParams + '\n' + // query params
-       canonicalHeaders +// headers
-       '\n' + // no idea why this needs to be here, but it fails without
-       signedHeaders + '\n' + // signed header list
-       crypto.SHA256(payload, { asBytes: true }); // hash of payload (empty string)
-
-   if (debug === true) {
-      console.log('canonical request: ' + canonicalRequest + '\n');
-   }
-
-   var hashedCanonicalRequest = crypto.SHA256(canonicalRequest, { asBytes: true });
-
-   if (debug === true) {
-      console.log('hashed canonical request: ' + hashedCanonicalRequest + '\n');
-   }
-
-   var stringToSign = 'AWS4-HMAC-SHA256\n' +
-       now + '\n' +
-       today + '/' + region + '/' + serviceName + '/aws4_request\n' +
-       hashedCanonicalRequest;
-
-   if (debug === true) {
-      console.log('string to sign: ' + stringToSign + '\n');
-   }
-
-   var signingKey = getSignatureKey(secretKey, today, region, serviceName);
-
-   if (debug === true) {
-      console.log('signing key: ' + signingKey + '\n');
-   }
-
-   var signature = crypto.HmacSHA256(stringToSign, signingKey, { asBytes: true });
-
-   if (debug === true) {
-      console.log('signature: ' + signature + '\n');
-   }
-
-   var finalParams = queryParams + '&X-Amz-Signature=' + signature;
-
-   var url = scheme + hostname + path + '?' + finalParams;
-
-   if (debug === true) {
-      console.log('url: ' + url + '\n');
-   }
-
-   return url;
-}
-
-function prepareWebsocketUrl( options, awsAccessId, awsSecretKey )
-{
-   var now = getDateTimeString();
-   var today = getDateString( now );
-   var path = '/mqtt';
-   var awsServiceName = 'iotdata';
-   var queryParams = 'X-Amz-Algorithm=AWS4-HMAC-SHA256' +
-   '&X-Amz-Credential=' + awsAccessId + '%2F' + today + '%2F' + options.region + '%2F' + awsServiceName + '%2Faws4_request' +
-   '&X-Amz-Date=' + now +
-   '&X-Amz-SignedHeaders=host';
-
-   return signUrl('GET', 'wss://', options.host, path, queryParams, 
-                     awsAccessId, awsSecretKey, options.region, awsServiceName, '', today, now, options.debug );
-}
-
 //
 // This method is the exposed module; it validates the mqtt options,
 // creates a secure mqtt connection via TLS, and returns the mqtt
 // connection instance.
 //
 module.exports = function(options) {
-
-  var awsAccessId;
-  var awsSecretKey;
-
-//
-// Validate options, set default reconnect period if not specified.
-//
+  //
+  // Validate options, set default reconnect period if not specified.
+  //
   if (isUndefined(options) ||
-      Object.keys(options).length === 0) {
-      throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
+    Object.keys(options).length === 0) {
+    throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
   }
   if (isUndefined(options.reconnectPeriod)) {
     options.reconnectPeriod = reconnectPeriod;
   }
-  // set protocol, do not override existing definitions if available
-  if (isUndefined(options.protocol))
-  {
-     options.protocol = 'mqtts';
+
+  // set port, do not override existing definitions if available
+  if (isUndefined(options.port)) {
+    options.port = 8883;
+  }
+  options.protocol = 'mqtts';
+
+  if (isUndefined(options.host)) {
+    if (!(isUndefined(options.region))) {
+      options.host = 'data.iot.' + options.region + '.amazonaws.com';
+    } else {
+      throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
+    }
   }
 
-  if (isUndefined(options.host))
-  {
-     if (!(isUndefined(options.region)))
-     {
-        options.host = 'data.iot.'+options.region+'.amazonaws.com';
-     }
-     else
-     {
-        throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
-     }
-  }
+  //read and map certificates
+  tlsReader(options);
 
-  if (options.protocol === 'mqtts')
-  {
-     // set port, do not override existing definitions if available
-     if (isUndefined(options.port))
-     {
-        options.port = 8883;
-     }
-
-     //read and map certificates
-     tlsReader(options);
-  }
-  else if (options.protocol === 'wss')
-  {
-     //AWS access id and secret key must be available in environment
-     awsAccessId = process.env.AWS_ACCESS_KEY_ID;
-     awsSecretKey = process.env.AWS_SECRET_ACCESS_KEY;
-  
-     if (isUndefined( awsAccessId ) || (isUndefined( awsSecretKey )))
-     {
-        console.log('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be defined in environment');
-        throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
-     }
-     // set port, do not override existing definitions if available
-     if (isUndefined(options.port))
-     {
-        options.port = 443;
-     }
-  }
-  else
-  {
-     console.log('unsupported protocol: '+options.protocol);
-     throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
-  }
-
-  if ((!isUndefined(options)) && (options.debug===true))
-  {
-     console.log(options);
-     console.log('attempting new mqtt connection...');
+  if ((!isUndefined(options)) && (options.debug === true)) {
+    console.log(options);
+    console.log('attempting new mqtt connection...');
   }
   //connect and return the client instance to map all mqttjs apis
-
-  var protocols = {};
-  protocols.mqtts = require('./lib/tls');
-  protocols.wss = require('./lib/ws');
-
-  function wrapper (client) {
-     if (options.protocol === 'wss')
-     {
-        //
-        // Access id and secret key are available, prepare URL. 
-        //
-        var url = prepareWebsocketUrl( options, awsAccessId, awsSecretKey );
-
-        if (options.debug === true) {
-           console.log('using websockets, will connect to \''+url+'\'...');
-        }
-
-        options.url = url;
-    }
-    return protocols[options.protocol](client, options);
-  }
-
-  const device = new mqtt.MqttClient(wrapper, options);
+  const device = mqtt.connect(options);
 
   //handle some exceptions
-  
-  device 
+  device
     .on('error', function(error) {
       //certificate issue
       if (error.code === 'EPROTO') {
         throw new Error(error);
       }
     });
-  
   return device;
 };
-
-module.exports.prepareWebsocketUrl = prepareWebsocketUrl;
