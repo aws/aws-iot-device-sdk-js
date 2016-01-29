@@ -3,9 +3,9 @@
   "description": "AWS IoT Temperature Control Simulation",
   "version": "1.0.0",
   "author": {
-     "name":"Amazon Web Services",
-     "email":"",
-     "url":"http://aws.amazon.com"
+    "name": "Amazon Web Services",
+    "email": "",
+    "url": "http://aws.amazon.com"
   },
   "main": "temperature-control.js",
   "license": "Apache-2.0",

@@ -19,7 +19,7 @@
 
 //app deps
 const thingShadow = require('..').thingShadow;
-const cmdLineProcess   = require('./lib/cmdline');
+const cmdLineProcess = require('./lib/cmdline');
 
 //begin module
 
@@ -30,232 +30,229 @@ const cmdLineProcess   = require('./lib/cmdline');
 // updates on the thing shadow on publishes to the non-thing
 // topic.
 //
-function processTest( args ) {
-//
-// Instantiate the thing shadow class.
-//
-const thingShadows = thingShadow({
-  keyPath: args.privateKey,
-  certPath: args.clientCert,
-  caPath: args.caCert,
-  clientId: args.clientId,
-  region: args.region,
-  reconnectPeriod: args.reconnectPeriod,
-  protocol: args.Protocol,
-  port: args.Port,
-  host: args.Host,
-  debug: args.Debug
-});
+function processTest(args) {
+  //
+  // Instantiate the thing shadow class.
+  //
+  const thingShadows = thingShadow({
+    keyPath: args.privateKey,
+    certPath: args.clientCert,
+    caPath: args.caCert,
+    clientId: args.clientId,
+    region: args.region,
+    reconnectPeriod: args.reconnectPeriod,
+    protocol: args.Protocol,
+    port: args.Port,
+    host: args.Host,
+    debug: args.Debug
+  });
 
-//
-// Operation timeout in milliseconds
-//
-const operationTimeout = 10000;    
+  //
+  // Operation timeout in milliseconds
+  //
+  const operationTimeout = 10000;
 
-const thingName = 'thingShadow1';
-const nonThingName = 'nonThingTopic1';
+  const thingName = 'thingShadow1';
+  const nonThingName = 'nonThingTopic1';
 
-//
-// The current operation count
-//
-var count=1;
+  //
+  // The current operation count
+  //
+  var count = 1;
 
-var currentTimeout = null;
+  var currentTimeout = null;
 
-//
-// For convenience, use a stack to keep track of the current client 
-// token; in this example app, this should never reach a depth of more 
-// than a single element, but if your application uses multiple thing
-// shadows simultaneously, you'll need some data structure to correlate 
-// client tokens with their respective thing shadows.
-//
-var stack = [];
+  //
+  // For convenience, use a stack to keep track of the current client 
+  // token; in this example app, this should never reach a depth of more 
+  // than a single element, but if your application uses multiple thing
+  // shadows simultaneously, you'll need some data structure to correlate 
+  // client tokens with their respective thing shadows.
+  //
+  var stack = [];
 
-function genericOperation( operation, state )
-{
-   var clientToken = thingShadows[operation]( thingName, state );
+  function genericOperation(operation, state) {
+    var clientToken = thingShadows[operation](thingName, state);
 
-   if (clientToken === null)
-   {
-//
-// The thing shadow operation can't be performed because another one
-// is pending; if no other operation is pending, reschedule it after an 
-// interval which is greater than the thing shadow operation timeout.
-//
+    if (clientToken === null) {
+      //
+      // The thing shadow operation can't be performed because another one
+      // is pending; if no other operation is pending, reschedule it after an 
+      // interval which is greater than the thing shadow operation timeout.
+      //
       if (currentTimeout !== null) {
-         console.log('operation in progress, scheduling retry...');
-         currentTimeout = setTimeout( 
-            function() { genericOperation( operation, state ); }, 
-                  operationTimeout * 2 );
+        console.log('operation in progress, scheduling retry...');
+        currentTimeout = setTimeout(
+          function() {
+            genericOperation(operation, state);
+          },
+          operationTimeout * 2);
       }
-   }
-   else
-   {
-//
-// Save the client token so that we know when the operation completes.
-//
-      stack.push( clientToken );
-   }
-}
+    } else {
+      //
+      // Save the client token so that we know when the operation completes.
+      //
+      stack.push(clientToken);
+    }
+  }
 
-function generateState() 
-{
-   return { state: { desired: { value: count++ }}};
-}
+  function generateState() {
+    return {
+      state: {
+        desired: {
+          value: count++
+        }
+      }
+    };
+  }
 
-function thingUpdateeConnect()
-{
-//
-// This process receives deltas from the thing shadow and publishes the
-// data to the non-thing topic.
-//
-   thingShadows.register( thingName, { ignoreDeltas: false,
-                                       operationTimeout: operationTimeout } );
-}
+  function thingUpdateeConnect() {
+    //
+    // This process receives deltas from the thing shadow and publishes the
+    // data to the non-thing topic.
+    //
+    thingShadows.register(thingName, {
+      ignoreDeltas: false,
+      operationTimeout: operationTimeout
+    });
+  }
 
-function thingUpdaterConnect()
-{
-//
-// This process updates the thing shadow and subscribes to the non-thing
-// topic.
-//
-   thingShadows.register( thingName, { ignoreDeltas: true,
-                                       operationTimeout: operationTimeout } );
-   genericOperation( 'update', generateState() );
-   thingShadows.subscribe( nonThingName );
-}
+  function thingUpdaterConnect() {
+    //
+    // This process updates the thing shadow and subscribes to the non-thing
+    // topic.
+    //
+    thingShadows.register(thingName, {
+      ignoreDeltas: true,
+      operationTimeout: operationTimeout
+    });
+    genericOperation('update', generateState());
+    thingShadows.subscribe(nonThingName);
+  }
 
-function handleConnections()
-{
-   if (args.testMode === 1) {
+  function handleConnections() {
+    if (args.testMode === 1) {
       thingUpdateeConnect();
-   } else {
+    } else {
       thingUpdaterConnect();
-   }
-}
+    }
+  }
 
-function handleStatus( thingName, stat, clientToken, stateObject )
-{
-   var expectedClientToken = stack.pop();
+  function handleStatus(thingName, stat, clientToken, stateObject) {
+    var expectedClientToken = stack.pop();
 
-   if (expectedClientToken === clientToken) {
-      console.log( 'got \''+stat+'\' status on: '+thingName);
-   }
-   else {
-      console.log('(status) client token mismtach on: '+thingName);
-   }
+    if (expectedClientToken === clientToken) {
+      console.log('got \'' + stat + '\' status on: ' + thingName);
+    } else {
+      console.log('(status) client token mismtach on: ' + thingName);
+    }
 
-   if (args.testMode === 2) {
+    if (args.testMode === 2) {
       console.log('updated state to thing shadow');
-//
-// If no other operation is pending, restart it after 10 seconds.
-//
+      //
+      // If no other operation is pending, restart it after 10 seconds.
+      //
       if (currentTimeout === null) {
-         currentTimeout = setTimeout( function() {
-            currentTimeout = null;
-            genericOperation( 'update', generateState());
-         }, 10000 );
+        currentTimeout = setTimeout(function() {
+          currentTimeout = null;
+          genericOperation('update', generateState());
+        }, 10000);
       }
-   }
-}
+    }
+  }
 
-function handleDelta( thingName, stateObject )
-{
-   if (args.testMode === 2) {
-      console.log('unexpected delta in device mode: ' + thingName );
-   }
-   else {
-      console.log('received delta on '+thingName+
-                  ', publishing on non-thing topic...');
-      thingShadows.publish( nonThingName,
-                            JSON.stringify({ message: 'received '+
-                              JSON.stringify(stateObject.state) } ));
-   }
-}
+  function handleDelta(thingName, stateObject) {
+    if (args.testMode === 2) {
+      console.log('unexpected delta in device mode: ' + thingName);
+    } else {
+      console.log('received delta on ' + thingName +
+        ', publishing on non-thing topic...');
+      thingShadows.publish(nonThingName,
+        JSON.stringify({
+          message: 'received ' +
+            JSON.stringify(stateObject.state)
+        }));
+    }
+  }
 
-function handleTimeout( thingName, clientToken )
-{
-   var expectedClientToken = stack.pop();
+  function handleTimeout(thingName, clientToken) {
+    var expectedClientToken = stack.pop();
 
-   if (expectedClientToken === clientToken) {
-      console.log('timeout on: '+thingName);
-   } 
-   else {
-      console.log('(timeout) client token mismtach on: '+thingName);
-   }
+    if (expectedClientToken === clientToken) {
+      console.log('timeout on: ' + thingName);
+    } else {
+      console.log('(timeout) client token mismtach on: ' + thingName);
+    }
 
-   if (args.testMode === 2) {
-      genericOperation( 'update', generateState());
-   }
-}
+    if (args.testMode === 2) {
+      genericOperation('update', generateState());
+    }
+  }
 
-function handleMessage( topic, payload )
-{
-    console.log('received on \''+topic+'\': '+ payload.toString());
-}
+  function handleMessage(topic, payload) {
+    console.log('received on \'' + topic + '\': ' + payload.toString());
+  }
 
-thingShadows.on('connect', function() {
+  thingShadows.on('connect', function() {
     console.log('connected to things instance, registering thing name');
     handleConnections();
-});
+  });
 
-thingShadows.on('close', function() {
+  thingShadows.on('close', function() {
     console.log('close');
-    thingShadows.unregister( thingName );
-});
+    thingShadows.unregister(thingName);
+  });
 
-thingShadows.on('reconnect', function() {
+  thingShadows.on('reconnect', function() {
     console.log('reconnect');
     handleConnections();
-});
+  });
 
-thingShadows.on('offline', function() {
-//
-// If any timeout is currently pending, cancel it.
-//
-    if (currentTimeout !== null) 
-    {
-       clearTimeout(currentTimeout);
-       currentTimeout=null;
+  thingShadows.on('offline', function() {
+    //
+    // If any timeout is currently pending, cancel it.
+    //
+    if (currentTimeout !== null) {
+      clearTimeout(currentTimeout);
+      currentTimeout = null;
     }
-//
-// If any operation is currently underway, cancel it.
-//
+    //
+    // If any operation is currently underway, cancel it.
+    //
     while (stack.length) {
-       stack.pop();
+      stack.pop();
     }
     console.log('offline');
-});
+  });
 
-thingShadows.on('error', function(error) {
+  thingShadows.on('error', function(error) {
     console.log('error', error);
-});
+  });
 
-thingShadows.on('message', function(topic, payload) {
+  thingShadows.on('message', function(topic, payload) {
     console.log('message', topic, payload.toString());
-});
+  });
 
-thingShadows.on('status', function(thingName, stat, clientToken, stateObject) {
-    handleStatus( thingName, stat, clientToken, stateObject );
-});
+  thingShadows.on('status', function(thingName, stat, clientToken, stateObject) {
+    handleStatus(thingName, stat, clientToken, stateObject);
+  });
 
-thingShadows.on('delta', function(thingName, stateObject) {
-     handleDelta( thingName, stateObject );
-});
+  thingShadows.on('delta', function(thingName, stateObject) {
+    handleDelta(thingName, stateObject);
+  });
 
-thingShadows.on('timeout', function(thingName, clientToken) {
-     handleTimeout( thingName, clientToken );
-});
+  thingShadows.on('timeout', function(thingName, clientToken) {
+    handleTimeout(thingName, clientToken);
+  });
 
-thingShadows.on('message', function(topic, payload) {
-     handleMessage( topic, payload );
-});
+  thingShadows.on('message', function(topic, payload) {
+    handleMessage(topic, payload);
+  });
 }
 
 module.exports = cmdLineProcess;
 
 if (require.main === module) {
   cmdLineProcess('connect to the AWS IoT service and demonstrate thing shadow APIs, test modes 1-2',
-                 process.argv.slice(2), processTest );
+    process.argv.slice(2), processTest);
 }
-
