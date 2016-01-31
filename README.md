@@ -59,6 +59,8 @@ npm install
 <a name="examples"></a>
 ## Examples
 
+Note: The examples use 'us-east-1' by default, if your key/certificate region is different, use the flag '-g' to specify your region. e.g 'us-west-2'
+
 ### Device Class
 ```js
 var awsIot = require('aws-iot-device-sdk');
