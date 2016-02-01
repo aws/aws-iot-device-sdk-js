@@ -455,6 +455,9 @@ follows:
 ```sh
 node examples/<EXAMPLE-PROGRAM> -h
 ```
+
+Note: The examples use 'us-east-1' by default, if your key/certificate region is different, use the flag '-g' to specify your region. e.g 'us-west-2'
+
 <a name="websockets"></a>
 ### WebSocket Configuration 
 
