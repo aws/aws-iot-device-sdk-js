@@ -66,7 +66,7 @@ function getSignatureKey(key, dateStamp, regionName, serviceName) {
 }
 
 function signUrl(method, scheme, hostname, path, queryParams, accessId, secretKey, 
-                 region, serviceName, payload, today, now, debug ) {
+                 region, serviceName, payload, today, now, debug, awsSTSToken ) {
 
    var signedHeaders = 'host';
 
@@ -113,6 +113,10 @@ function signUrl(method, scheme, hostname, path, queryParams, accessId, secretKe
 
    var finalParams = queryParams + '&X-Amz-Signature=' + signature;
 
+   if (awsSTSToken){
+      finalParams += "&X-Amz-Security-Token=" + encodeURIComponent(awsSTSToken);
+   }
+
    var url = scheme + hostname + path + '?' + finalParams;
 
    if (debug === true) {
@@ -122,7 +126,7 @@ function signUrl(method, scheme, hostname, path, queryParams, accessId, secretKe
    return url;
 }
 
-function prepareWebsocketUrl( options, awsAccessId, awsSecretKey )
+function prepareWebsocketUrl( options, awsAccessId, awsSecretKey, awsSTSToken )
 {
    var now = getDateTimeString();
    var today = getDateString( now );
@@ -134,7 +138,7 @@ function prepareWebsocketUrl( options, awsAccessId, awsSecretKey )
    '&X-Amz-SignedHeaders=host';
 
    return signUrl('GET', 'wss://', options.host, path, queryParams, 
-                     awsAccessId, awsSecretKey, options.region, awsServiceName, '', today, now, options.debug );
+                     awsAccessId, awsSecretKey, options.region, awsServiceName, '', today, now, options.debug, awsSTSToken );
 }
 
 //
@@ -146,6 +150,7 @@ module.exports = function(options) {
 
   var awsAccessId;
   var awsSecretKey;
+  var awsSTSToken;
 
 //
 // Validate options, set default reconnect period if not specified.
@@ -191,6 +196,7 @@ module.exports = function(options) {
      //AWS access id and secret key must be available in environment
      awsAccessId = process.env.AWS_ACCESS_KEY_ID;
      awsSecretKey = process.env.AWS_SECRET_ACCESS_KEY;
+     awsSTSToken = process.env.AWS_SESSION_TOKEN;
   
      if (isUndefined( awsAccessId ) || (isUndefined( awsSecretKey )))
      {
@@ -226,7 +232,7 @@ module.exports = function(options) {
         //
         // Access id and secret key are available, prepare URL. 
         //
-        var url = prepareWebsocketUrl( options, awsAccessId, awsSecretKey );
+        var url = prepareWebsocketUrl( options, awsAccessId, awsSecretKey, awsSTSToken );
 
         if (options.debug === true) {
            console.log('using websockets, will connect to \''+url+'\'...');
