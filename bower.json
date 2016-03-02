@@ -1,0 +1,28 @@
+{
+  "name": "aws-iot-device-sdk",
+  "description": "AWS IoT JavaScript SDK for Embedded Devices",
+  "main": "index.js",
+  "authors": [
+    "Gary Wicker <gkwicker@amazon.com>",
+    "Frank Lovecchio <flovec@amazon.com>",
+    "Tristam MacDonald <tristamm@amazon.com>",
+    "Liusu Zeng <liuszeng@amazon.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "api",
+    "amazon",
+    "aws",
+    "iot",
+    "mqtt"
+  ],
+  "homepage": "https://github.com/aws/aws-iot-device-sdk-js",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
