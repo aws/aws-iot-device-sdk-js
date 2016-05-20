@@ -19,6 +19,7 @@ const inherits = require('util').inherits;
 
 //npm deps
 const mqtt = require('mqtt');
+const MqttClient = require('mqtt/lib/client');
 const crypto = require('crypto-js');
 
 //app deps
@@ -506,7 +507,7 @@ function DeviceClient(options) {
       return protocols[options.protocol](client, options);
    }
 
-   const device = new mqtt.MqttClient(_wrapper, options);
+   const device = new MqttClient(_wrapper, options);
 
    //handle events from the mqtt client
 
