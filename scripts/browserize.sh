@@ -49,11 +49,6 @@ then
 #
             (cd $BROWSER_BUNDLE_DIR; tar cvzf aws-iot-device-sdk.tgz --exclude ${PWD##*/} --exclude node_modules --exclude .git --exclude .coverdata --exclude debug --exclude examples --exclude reports --exclude test -C ../ .; mkdir -p node_modules/aws-iot-device-sdk; (cd node_modules/aws-iot-device-sdk; tar xvzf ../../aws-iot-device-sdk.tgz); npm install)
 #
-# Patch mqtt.js so that we have access to its internal client constructor (needed so that we 
-# can dynamically create the URL).
-#
-            (cd $BROWSER_BUNDLE_DIR/node_modules/mqtt/lib/connect; echo "module.exports.MqttClient = MqttClient;" >> index.js)
-#
 # Finally, create the browser bundle and delete all working files/directories.  Note
 # that we allow aws-iot-device-sdk and aws-sdk to be required by other browserify bundles.
 #
