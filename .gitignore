@@ -27,3 +27,5 @@ debug
 # browser bundles    #
 ######################
 *bundle.js
+
+.idea/*
