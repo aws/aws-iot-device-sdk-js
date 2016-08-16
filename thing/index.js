@@ -151,16 +151,12 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       }
       //
       // Subscribe/unsubscribe from the topics and perform callback when complete.
-      //      
-      if (!isUndefined(callback)) {
-         device[devFunction](topics, {
-            qos: thingShadows[thingName].qos
-         }, callback);
-      } else {
-         device[devFunction](topics, {
-            qos: thingShadows[thingName].qos
-         });
-      }
+      //
+      var options = { qos: thingShadows[thingName].qos };
+      var params = [topics];
+      if (devFunction !== 'unsubscribe') params.push(options);
+      if (!isUndefined(callback)) params.push(callback);
+      device[devFunction](...params);
    };
 
    //
@@ -185,14 +181,14 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       delete stateObject.clientToken;
       delete stateObject.version;
       //
-      // Update the thing version on every accepted or delta message which 
+      // Update the thing version on every accepted or delta message which
       // contains it.
       //
       if ((!isUndefined(version)) && (operationStatus !== 'rejected')) {
          //
          // The thing shadow version is incremented by AWS IoT and should always
          // increase.  Do not update our local version if the received version is
-         // less than our version.  
+         // less than our version.
          //
          if ((isUndefined(thingShadows[thingName].version)) ||
             (version >= thingShadows[thingName].version)) {
@@ -206,7 +202,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             //  2) The message has arrived out-of-order.
             //
             // For case 1) we can look at the operation to determine that this
-            // is the case and notify the client if appropriate.  For case 2, 
+            // is the case and notify the client if appropriate.  For case 2,
             // we will not process it unless the client has specifically expressed
             // an interested in these messages by setting 'discardStale' to false.
             //
@@ -341,8 +337,8 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             //
             thingShadows[thingName].pending = true;
             //
-            // If not provided, construct a clientToken from the clientId and a rolling 
-            // operation count.  The clientToken is transmitted in any published stateObject 
+            // If not provided, construct a clientToken from the clientId and a rolling
+            // operation count.  The clientToken is transmitted in any published stateObject
             // and is returned to the caller for each operation.  Applications can use
             // clientToken values to correlate received responses or timeouts with
             // the original operations.
@@ -359,7 +355,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
                operation);
             //
             // Subscribe to the 'accepted' and 'rejected' sub-topics for this get
-            // operation and set a timeout beyond which they will be unsubscribed if 
+            // operation and set a timeout beyond which they will be unsubscribed if
             // no messages have been received for either of them.
             //
             thingShadows[thingName].timeouts[clientToken] = setTimeout(
@@ -408,7 +404,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
 
                      if (!isUndefined(stateObject)) {
                         //
-                        // Add the version # (if known and versioning is enabled) and 
+                        // Add the version # (if known and versioning is enabled) and
                         // 'clientToken' properties to the stateObject.
                         //
                         if (!isUndefined(thingShadows[thingName].version) &&
@@ -430,7 +426,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
                   });
             } else {
                //
-               // Add the version # (if known and versioning is enabled) and 
+               // Add the version # (if known and versioning is enabled) and
                // 'clientToken' properties to the stateObject.
                //
                if (!isUndefined(thingShadows[thingName].version) &&
@@ -465,8 +461,8 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    this.register = function(thingName, options) {
       if (!thingShadows.hasOwnProperty(thingName)) {
          //
-         // Initialize the registration entry for this thing; because the version # is 
-         // not yet known, do not add the property for it yet. The version number 
+         // Initialize the registration entry for this thing; because the version # is
+         // not yet known, do not add the property for it yet. The version number
          // property will be added after the first accepted update from AWS IoT.
          //
          var ignoreDeltas = false;
@@ -528,7 +524,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       if (thingShadows.hasOwnProperty(thingName)) {
          //
          // If an operation is outstanding, it will have a timeout set; when it
-         // expires any accept/reject sub-topic subscriptions for the thing will be 
+         // expires any accept/reject sub-topic subscriptions for the thing will be
          // deleted.  If any messages arrive after the thing has been deleted, they
          // will simply be ignored as it no longer exists in the thing registrations.
          // The only sub-topic we need to unsubscribe from is the delta sub-topic,
