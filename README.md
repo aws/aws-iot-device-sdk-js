@@ -130,18 +130,11 @@ thingShadows.on('connect', function() {
 // After connecting to the AWS IoT platform, register interest in the
 // Thing Shadow named 'RGBLedLamp'.
 //
-    thingShadows.register( 'RGBLedLamp' );
-//
-// 5 seconds after registering, update the Thing Shadow named 
+    thingShadows.register( 'RGBLedLamp', function() {
+
+// When the Thing Shadow is ready, update the Thing Shadow named
 // 'RGBLedLamp' with the latest device state and save the clientToken
 // so that we can correlate it with status or timeout events.
-//
-// Note that the delay is not required for subsequent updates; only
-// the first update after a Thing Shadow registration using default
-// parameters requires a delay.  See API documentation for the update
-// method for more details.
-//
-    setTimeout( function() {
 //
 // Thing shadow state
 //
@@ -160,7 +153,6 @@ thingShadows.on('connect', function() {
        {
           console.log('update shadow failed, operation still in progress');
        }
-       }, 5000 );
     });
 
 thingShadows.on('status', 
@@ -333,7 +325,7 @@ from each operation.
 
 -------------------------------------------------------
 <a name="register"></a>
-### awsIot.thingShadow#register(thingName, [options] )
+### awsIot.thingShadow#register(thingName, [options], [callback] )
 
 Register interest in the Thing Shadow named `thingName`.  The thingShadow class will
 subscribe to any applicable topics, and will fire events for the Thing Shadow
@@ -363,6 +355,10 @@ If `enableVersioning` is set to true, version numbers will be sent with each ope
 AWS IoT maintains version numbers for each shadow, and will reject operations which 
 contain the incorrect version; in applications where multiple clients update the same
 shadow, clients can use versioning to avoid overwriting each other's changes.
+
+The `callback` parameter are optional and will be called when the thingShadow is read for use.
+*Ready for use* means when we have received subscription ACK on all needed topics. 
+The callback should be used when delete/get/update operations is needed right after the thingShadow is ready.
 
 -------------------------------------------------------
 <a name="unregister"></a>

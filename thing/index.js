@@ -462,7 +462,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       return rc;
    };
 
-   this.register = function(thingName, options) {
+   this.register = function(thingName, options, callback) {
       if (!thingShadows.hasOwnProperty(thingName)) {
          //
          // Initialize the registration entry for this thing; because the version # is 
@@ -477,15 +477,19 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             discardStale: true,
             enableVersioning: true,
             qos: 0,
-            pending: false
+            pending: false,
+            pendingDeltaSubscribe: true,
+            pendingPersistentSubscribe: true
          };
 
          if (!isUndefined(options)) {
             if (!isUndefined(options.ignoreDeltas)) {
                ignoreDeltas = options.ignoreDeltas;
+               thingShadows[thingName].pendingDeltaSubscribe = !ignoreDeltas;
             }
             if (!isUndefined(options.persistentSubscribe)) {
                thingShadows[thingName].persistentSubscribe = options.persistentSubscribe;
+               thingShadows[thingName].pendingPersistentSubscribe = options.persistentSubscribe;
             }
             if (!isUndefined(options.debug)) {
                thingShadows[thingName].debug = options.debug;
@@ -505,7 +509,14 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          //
          if (ignoreDeltas === false) {
             this._handleSubscriptions(thingName, ['update'], ['delta'],
-               'subscribe');
+               'subscribe', function () {
+                  thingShadows[thingName].pendingDeltaSubscribe = false;
+                  if (!thingShadows[thingName].pendingDeltaSubscribe && !thingShadows[thingName].pendingPersistentSubscribe) {
+                     if (!isUndefined(callback)) {
+                        callback();
+                     }
+                  }
+               });
          }
          //
          // If we are persistently subscribing, we subscribe to everything we could ever
@@ -515,7 +526,20 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          //
          if (thingShadows[thingName].persistentSubscribe === true) {
             this._handleSubscriptions(thingName, ['update', 'get', 'delete'], ['accepted', 'rejected'],
-               'subscribe');
+               'subscribe', function () {
+                  thingShadows[thingName].pendingPersistentSubscribe = false;
+                  if (!thingShadows[thingName].pendingDeltaSubscribe && !thingShadows[thingName].pendingPersistentSubscribe) {
+                     if (!isUndefined(callback)) {
+                        callback();
+                     }
+                  }
+               });
+         }
+
+         if (ignoreDeltas === true && thingShadows[thingName].persistentSubscribe === false) {
+               if (!isUndefined(callback)) {
+                  callback();
+               }
          }
       } else {
          if (deviceOptions.debug === true) {

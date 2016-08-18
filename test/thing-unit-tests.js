@@ -69,6 +69,53 @@ describe( "thing shadow class unit tests", function() {
       });
    });
 
+   describe( "register a thing shadow name should trigger callback", function() {
+//
+// Verify that the thing shadow invokes the register callback when subscription to all
+// topics are finished. The callback is invoked based on the callback from the mqtt library.
+//
+
+      var thingShadowsConfig = {
+         keyPath: 'test/data/private.pem.key',
+         certPath: 'test/data/certificate.pem.crt',
+         caPath: 'test/data/root-CA.crt',
+         clientId: 'dummy-client-1',
+         region: 'us-east-1'
+      };
+
+      it("when ignoreDeltas is true and persistentSubscribe is true", function() {
+            var thingShadows = thingShadow( thingShadowsConfig );
+            var fakeCallback = sinon.spy();
+            thingShadows.register( 'testShadow1', {ignoreDeltas:true, persistentSubscribe:true}, fakeCallback);
+
+            assert(fakeCallback.calledOnce);
+      });
+
+      it("when ignoreDeltas is false and persistentSubscribe is false", function() {
+            var thingShadows = thingShadow( thingShadowsConfig );
+            var fakeCallback = sinon.spy();
+            thingShadows.register( 'testShadow1', {ignoreDeltas:false, persistentSubscribe:false}, fakeCallback);
+
+            assert(fakeCallback.calledOnce);
+      });
+
+      it("when ignoreDeltas is true and persistentSubscribe is false", function() {
+            var thingShadows = thingShadow( thingShadowsConfig );
+            var fakeCallback = sinon.spy();
+            thingShadows.register( 'testShadow1', {ignoreDeltas:true, persistentSubscribe:false}, fakeCallback);
+
+            assert(fakeCallback.calledOnce);
+      });
+
+      it("when ignoreDeltas is false and persistentSubscribe is true", function() {
+            var thingShadows = thingShadow( thingShadowsConfig );
+            var fakeCallback = sinon.spy();
+            thingShadows.register( 'testShadow1', {ignoreDeltas:false, persistentSubscribe:true}, fakeCallback);
+
+            assert(fakeCallback.calledOnce);
+      });
+   });
+
    describe( "subscribe to/unsubscribe from a non-thing topic", function() {
 //
 // Verify that the thing shadow module does not throw an exception
