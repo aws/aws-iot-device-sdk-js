@@ -69,7 +69,7 @@ describe( "thing shadow class unit tests", function() {
       });
    });
 
-   describe( "register a thing shadow name should trigger callback", function() {
+   describe( "register a thing shadow name", function() {
 //
 // Verify that the thing shadow invokes the register callback when subscription to all
 // topics are finished. The callback is invoked based on the callback from the mqtt library.
@@ -83,7 +83,34 @@ describe( "thing shadow class unit tests", function() {
          region: 'us-east-1'
       };
 
-      it("when ignoreDeltas is true and persistentSubscribe is true", function() {
+      it("should trigger error when a subscription fails", function () {
+
+        // Need local stub to trigger error, so just copy-paste the code
+        var localMockMqtt;
+        var fakeConnect = function (options) {
+          mockMQTTClientObject = new mockMQTTClient(); // return the mocking object
+          mockMQTTClientObject.reInitCommandCalled();
+          mockMQTTClientObject.resetPublishedMessage();
+          mockMQTTClientObject.triggerError = true;
+          return mockMQTTClientObject;
+        };
+
+        mqttSave.restore();
+        mqttSave = sinon.stub(device, 'DeviceClient', fakeConnect);
+
+        var thingShadows = thingShadow(thingShadowsConfig);
+        thingShadows.register('testShadow1', { ignoreDeltas: true, persistentSubscribe: true }, function (err, granted) {
+          assert.notEqual(err, null);
+          for (var k = 0, grantedLen = granted.length; k < grantedLen; k++) {
+            //
+            // 128 is 0x80 - Failure from the MQTT lib.
+            //
+            assert.equal(granted[k].qos, 128);
+          }
+        });
+      });
+
+      it("should trigger callback when ignoreDeltas is true and persistentSubscribe is true", function() {
             var thingShadows = thingShadow( thingShadowsConfig );
             var fakeCallback = sinon.spy();
             thingShadows.register( 'testShadow1', {ignoreDeltas:true, persistentSubscribe:true}, fakeCallback);
@@ -91,7 +118,7 @@ describe( "thing shadow class unit tests", function() {
             assert(fakeCallback.calledOnce);
       });
 
-      it("when ignoreDeltas is false and persistentSubscribe is false", function() {
+      it("should trigger callback when ignoreDeltas is false and persistentSubscribe is false", function() {
             var thingShadows = thingShadow( thingShadowsConfig );
             var fakeCallback = sinon.spy();
             thingShadows.register( 'testShadow1', {ignoreDeltas:false, persistentSubscribe:false}, fakeCallback);
@@ -99,7 +126,7 @@ describe( "thing shadow class unit tests", function() {
             assert(fakeCallback.calledOnce);
       });
 
-      it("when ignoreDeltas is true and persistentSubscribe is false", function() {
+      it("should trigger callback when ignoreDeltas is true and persistentSubscribe is false", function() {
             var thingShadows = thingShadow( thingShadowsConfig );
             var fakeCallback = sinon.spy();
             thingShadows.register( 'testShadow1', {ignoreDeltas:true, persistentSubscribe:false}, fakeCallback);
@@ -107,7 +134,7 @@ describe( "thing shadow class unit tests", function() {
             assert(fakeCallback.calledOnce);
       });
 
-      it("when ignoreDeltas is false and persistentSubscribe is true", function() {
+      it("should trigger callback when ignoreDeltas is false and persistentSubscribe is true", function() {
             var thingShadows = thingShadow( thingShadowsConfig );
             var fakeCallback = sinon.spy();
             thingShadows.register( 'testShadow1', {ignoreDeltas:false, persistentSubscribe:true}, fakeCallback);
@@ -258,10 +285,10 @@ describe( "thing shadow class unit tests", function() {
           } );
           // Register a thing, using default delta settings
           thingShadows.register('testShadow1');
-          assert.equal(mockMQTTClientObject.commandCalled['subscribe'], 2); // Called twice, one for delta, one for GUD
+          assert.equal(mockMQTTClientObject.commandCalled['subscribe'], 1); // Called twice, one for delta, one for GUD
           mockMQTTClientObject.reInitCommandCalled();
           thingShadows.unregister('testShadow1');
-          assert.equal(mockMQTTClientObject.commandCalled['unsubscribe'], 2);
+          assert.equal(mockMQTTClientObject.commandCalled['unsubscribe'], 1);
     	});
     });
 
@@ -291,7 +318,7 @@ describe( "thing shadow class unit tests", function() {
           assert.equal(mockMQTTClientObject.commandCalled['subscribe'], 1); // Called once, for GUD
           mockMQTTClientObject.reInitCommandCalled();
           thingShadows.unregister('testShadow1');
-          assert.equal(mockMQTTClientObject.commandCalled['unsubscribe'], 2); // Called twice, unsub from ALL
+          assert.equal(mockMQTTClientObject.commandCalled['unsubscribe'], 1); // Called twice, unsub from ALL
       });
     });
 

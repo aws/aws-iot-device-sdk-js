@@ -18,6 +18,7 @@ function mockMQTTClient( wrapper, options ) {
         this.subscribeQosValues.length = 0;
         this.publishQosValues = new Array;
         this.publishQosValues.length = 0;
+        this.triggerError = null;
 
 	// Reinit the record list
 	this.reInitCommandCalled = function() {
@@ -68,22 +69,37 @@ function mockMQTTClient( wrapper, options ) {
 		callback = callback || '';
 		this.commandCalled['subscribe'] += 1;
 
+                var granted = [];
                 if ( Object.prototype.toString.call(topic) === '[object Array]' ) {
                    topic.forEach( function( item, index, array ) {
+                      var grantedTopic = {topic: item, qos: 0}
                       that.subscriptions.push( item );
                       if (!isUndefined( options.qos )) {
                          that.subscribeQosValues.push( options.qos );
+                         grantedTopic.qos = options.qos;
                       }
+
+                      if (that.triggerError) {
+                         grantedTopic.qos = 128;
+                      }
+
+                      granted.push(grantedTopic);
                    });
                 }
                 else {
+                   var grantedTopic = {topic: topic, qos: 0}
                    this.subscriptions.push( topic );
                       if (!isUndefined( options.qos )) {
                          that.subscribeQosValues.push( options.qos );
+                         grantedTopic.qos = options.qos;
                       }
+                      if (this.triggerError) {
+                         grantedTopic.qos = 128;
+                      }
+                      granted.push(grantedTopic);
                 }
 		if(callback !== '') {
-			callback(null); // call callback
+			callback(null, granted); // call callback
 		}
     };
 
