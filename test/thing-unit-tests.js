@@ -85,18 +85,7 @@ describe( "thing shadow class unit tests", function() {
 
       it("should trigger error when a subscription fails", function () {
 
-        // Need local stub to trigger error, so just copy-paste the code
-        var localMockMqtt;
-        var fakeConnect = function (options) {
-          mockMQTTClientObject = new mockMQTTClient(); // return the mocking object
-          mockMQTTClientObject.reInitCommandCalled();
-          mockMQTTClientObject.resetPublishedMessage();
-          mockMQTTClientObject.triggerError = true;
-          return mockMQTTClientObject;
-        };
-
-        mqttSave.restore();
-        mqttSave = sinon.stub(device, 'DeviceClient', fakeConnect);
+        var stubTriggerError = sinon.stub(mockMQTTClient, 'triggerError', function(){return true;});
 
         var thingShadows = thingShadow(thingShadowsConfig);
         thingShadows.register('testShadow1', { ignoreDeltas: true, persistentSubscribe: true }, function (err, granted) {
@@ -106,6 +95,7 @@ describe( "thing shadow class unit tests", function() {
             // 128 is 0x80 - Failure from the MQTT lib.
             //
             assert.equal(granted[k].qos, 128);
+            stubTriggerError.restore();
           }
         });
       });

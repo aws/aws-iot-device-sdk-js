@@ -18,7 +18,6 @@ function mockMQTTClient( wrapper, options ) {
         this.subscribeQosValues.length = 0;
         this.publishQosValues = new Array;
         this.publishQosValues.length = 0;
-        this.triggerError = null;
 
 	// Reinit the record list
 	this.reInitCommandCalled = function() {
@@ -79,7 +78,7 @@ function mockMQTTClient( wrapper, options ) {
                          grantedTopic.qos = options.qos;
                       }
 
-                      if (that.triggerError) {
+                      if (mockMQTTClient.triggerError()) {
                          grantedTopic.qos = 128;
                       }
 
@@ -93,7 +92,7 @@ function mockMQTTClient( wrapper, options ) {
                          that.subscribeQosValues.push( options.qos );
                          grantedTopic.qos = options.qos;
                       }
-                      if (this.triggerError) {
+                      if (mockMQTTClient.triggerError()) {
                          grantedTopic.qos = 128;
                       }
                       granted.push(grantedTopic);
@@ -123,4 +122,9 @@ function mockMQTTClient( wrapper, options ) {
 }
 
 util.inherits(mockMQTTClient, EventEmitter);
+
+mockMQTTClient.triggerError = function() {
+  return false;
+};
+
 module.exports = mockMQTTClient;
