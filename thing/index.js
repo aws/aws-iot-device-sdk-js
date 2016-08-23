@@ -131,18 +131,19 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    //
    // Private function to subscribe and unsubscribe from topics.
    //
-   this._handleSubscriptions = function(thingName, operations,
-      statii, devFunction, callback) {
+   this._handleSubscriptions = function(thingName, topicSpecs, devFunction, callback) {
       var topics = [];
 
       //
       // Build an array of topic names.
       //
-      for (var i = 0, k = 0, opsLen = operations.length; i < opsLen; i++) {
-         for (var j = 0, statLen = statii.length; j < statLen; j++) {
-            topics[k++] = buildThingShadowTopic(thingName,
-               operations[i],
-               statii[j]);
+      for (var i = 0, topicsLen = topicSpecs.length; i < topicsLen; i++) {
+         for (var j = 0, opsLen = topicSpecs[i].operations.length; j < opsLen; j++) {
+            for (var k = 0, statLen = topicSpecs[i].statii.length; k < statLen; k++) {
+               topics.push(buildThingShadowTopic(thingName,
+                  topicSpecs[i].operations[j],
+                  topicSpecs[i].statii[k]));
+            }
          }
       }
 
@@ -152,15 +153,35 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       //
       // Subscribe/unsubscribe from the topics and perform callback when complete.
       //      
-      if (!isUndefined(callback)) {
-         device[devFunction](topics, {
-            qos: thingShadows[thingName].qos
-         }, callback);
-      } else {
-         device[devFunction](topics, {
-            qos: thingShadows[thingName].qos
-         });
-      }
+      device[devFunction](topics, {
+         qos: thingShadows[thingName].qos
+      }, function (err, granted) {
+         if (!isUndefined(callback)) {
+            if (err) {
+               callback(err);
+               return;
+            }
+            //
+            // Check to see if we got all topic subscriptions granted.
+            //
+            var failedTopics = [];
+            for (var k = 0, grantedLen = granted.length; k < grantedLen; k++) {
+               //
+               // 128 is 0x80 - Failure from the MQTT lib.
+               //
+               if(granted[k].qos === 128) {
+                  failedTopics.push(granted[k]);
+               }
+            }
+
+            if (failedTopics.length > 0) {
+               callback('Not all subscriptions were granted', failedTopics);
+               return;
+            }
+
+            callback(null, null);
+         }
+      });
    };
 
    //
@@ -264,8 +285,10 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       // persistently subscribed to this thing shadow.
       //
       if (thingShadows[thingName].persistentSubscribe === false) {
-         this._handleSubscriptions(thingName, [operation], ['accepted', 'rejected'],
-            'unsubscribe');
+         this._handleSubscriptions(thingName, {
+            operations: [operation],
+            statii: ['accepted', 'rejected'],
+         }, 'unsubscribe');
       }
 
       //
@@ -369,8 +392,10 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
                   // we are persistently subscribing to this thing shadow.
                   //
                   if (thingShadows[thingName].persistentSubscribe === false) {
-                     that._handleSubscriptions(thingName, [operation], ['accepted', 'rejected'],
-                        'unsubscribe');
+                     that._handleSubscriptions(thingName, {
+                        operations: [operation],
+                        statii: ['accepted', 'rejected'],
+                     }, 'unsubscribe');
                   }
                   //
                   // Mark this operation as complete.
@@ -394,8 +419,10 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             // since we are already subscribed to all applicable sub-topics.
             //
             if (thingShadows[thingName].persistentSubscribe === false) {
-               this._handleSubscriptions(thingName, [operation], ['accepted', 'rejected'],
-                  'subscribe',
+               this._handleSubscriptions(thingName, {
+                  operations: [operation],
+                  statii: ['accepted', 'rejected'],
+               },'subscribe',
                   function(err) {
                      //
                      // If 'stateObject' is defined, publish it to the publish topic for this
@@ -462,7 +489,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       return rc;
    };
 
-   this.register = function(thingName, options) {
+   this.register = function(thingName, options, callback) {
       if (!thingShadows.hasOwnProperty(thingName)) {
          //
          // Initialize the registration entry for this thing; because the version # is 
@@ -470,6 +497,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          // property will be added after the first accepted update from AWS IoT.
          //
          var ignoreDeltas = false;
+         var topicSpecs = [];
          thingShadows[thingName] = {
             timeouts: {},
             persistentSubscribe: true,
@@ -477,7 +505,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             discardStale: true,
             enableVersioning: true,
             qos: 0,
-            pending: false
+            pending: true
          };
 
          if (!isUndefined(options)) {
@@ -504,8 +532,10 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          // Always listen for deltas unless requested otherwise.
          //
          if (ignoreDeltas === false) {
-            this._handleSubscriptions(thingName, ['update'], ['delta'],
-               'subscribe');
+            topicSpecs.push({
+               operations: ['update'],
+               statii: ['delta'],
+            });
          }
          //
          // If we are persistently subscribing, we subscribe to everything we could ever
@@ -514,9 +544,26 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          // which the application will need to filter out.
          //
          if (thingShadows[thingName].persistentSubscribe === true) {
-            this._handleSubscriptions(thingName, ['update', 'get', 'delete'], ['accepted', 'rejected'],
-               'subscribe');
+            topicSpecs.push({
+               operations: ['update', 'get', 'delete'],
+               statii: ['accepted', 'rejected'],
+            });
          }
+
+         if (topicSpecs.length > 0) {
+            this._handleSubscriptions(thingName, topicSpecs, 'subscribe', function(err, failedTopics){
+               thingShadows[thingName].pending = false;
+               if (!isUndefined(callback)) {
+                  callback(err, failedTopics);
+               }
+            });
+         } else {
+            thingShadows[thingName].pending = false;
+            if (!isUndefined(callback)) {
+               callback(null);
+            }
+         }
+
       } else {
          if (deviceOptions.debug === true) {
             console.error('thing already registered: ', thingName);
@@ -526,6 +573,8 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
 
    this.unregister = function(thingName) {
       if (thingShadows.hasOwnProperty(thingName)) {
+         var topicSpecs = [];
+
          //
          // If an operation is outstanding, it will have a timeout set; when it
          // expires any accept/reject sub-topic subscriptions for the thing will be 
@@ -534,17 +583,24 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          // The only sub-topic we need to unsubscribe from is the delta sub-topic,
          // which is always active.
          //
-         this._handleSubscriptions(thingName, ['update'], ['delta'],
-            'unsubscribe');
+         topicSpecs.push({
+            operations: ['update'],
+            statii: ['delta'],
+         });
+
          //
          // If we are persistently subscribing, we subscribe to everything we could ever
          // possibly be interested in; this means that when it's time to unregister
          // interest in a thing, we need to unsubscribe from all of these topics.
          //
          if (thingShadows[thingName].persistentSubscribe === true) {
-            this._handleSubscriptions(thingName, ['update', 'get', 'delete'], ['accepted', 'rejected'],
-               'unsubscribe');
+            topicSpecs.push({
+               operations: ['update', 'get', 'delete'],
+               statii: ['accepted', 'rejected'],
+            });
          }
+
+         this._handleSubscriptions(thingName, topicSpecs, 'unsubscribe');
          //
          // Delete any pending timeouts
          //
