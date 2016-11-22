@@ -632,7 +632,7 @@ function DeviceClient(options) {
    // handled here, *and* propagated upwards.
    //
 
-   device.on('connect', function() {
+   device.on('connect', function(connack) {
       //
       // If not already running, start the connection timer.
       //
@@ -650,7 +650,7 @@ function DeviceClient(options) {
          drainingTimer = setInterval(_drainOperationQueue,
             drainTimeMs);
       }
-      that.emit('connect');
+      that.emit('connect', connack);
    });
    device.on('close', function() {
       if ((!isUndefined(options)) && (options.debug === true)) {
