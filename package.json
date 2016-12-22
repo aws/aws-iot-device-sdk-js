@@ -50,5 +50,10 @@
     "test": "node ./node_modules/gulp/bin/gulp.js test --verbose",
     "browserize": "./scripts/browserize.sh",
     "beautify": "node ./node_modules/gulp/bin/gulp.js beautify"
+  },
+  "browser": {
+    "fs": false,
+    "tls": false,
+    "net": false
   }
 }
