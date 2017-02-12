@@ -185,7 +185,8 @@ thingShadows.on('timeout',
 // call to get(), update(), or delete().
 //
     });
-
+    
+});
 ```
 
 <a name="api"></a>
