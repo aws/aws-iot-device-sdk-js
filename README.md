@@ -130,7 +130,9 @@ thingShadows.on('connect', function() {
 // After connecting to the AWS IoT platform, register interest in the
 // Thing Shadow named 'RGBLedLamp'.
 //
-    thingShadows.register( 'RGBLedLamp', function() {
+    var options = {};
+
+    thingShadows.register( 'RGBLedLamp', options, function() {
 
 // Once registration is complete, update the Thing Shadow named
 // 'RGBLedLamp' with the latest device state and save the clientToken
