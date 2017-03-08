@@ -14,14 +14,14 @@
  */
 
 //node.js deps
-const events = require('events');
-const inherits = require('util').inherits;
+var events = require('events');
+var inherits = require('util').inherits;
 
 //npm deps
 
 //app deps
-const deviceModule = require('../device');
-const isUndefined = require('../common/lib/is-undefined');
+var deviceModule = require('../device');
+var isUndefined = require('../common/lib/is-undefined');
 
 //
 // private functions

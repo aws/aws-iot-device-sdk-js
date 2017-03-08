@@ -14,13 +14,13 @@
  */
 
 //node.js deps
-const filesys = require('fs');
+var filesys = require('fs');
 
 //npm deps
 
 //app deps
-const isUndefined = require('./is-undefined');
-const exceptions = require('./exceptions');
+var isUndefined = require('./is-undefined');
+var exceptions = require('./exceptions');
 
 //begin module
 /**
