@@ -14,17 +14,17 @@
  */
 
 //node.js deps
-const events = require('events');
-const inherits = require('util').inherits;
+var events = require('events');
+var inherits = require('util').inherits;
 
 //npm deps
-const mqtt = require('mqtt');
-const crypto = require('crypto-js');
+var mqtt = require('mqtt');
+var crypto = require('crypto-js');
 
 //app deps
-const exceptions = require('./lib/exceptions'),
-   isUndefined = require('../common/lib/is-undefined'),
-   tlsReader = require('../common/lib/tls-reader');
+var exceptions = require('./lib/exceptions');
+var isUndefined = require('../common/lib/is-undefined');
+var tlsReader = require('../common/lib/tls-reader');
 
 //begin module
 function makeTwoDigits(n) {
