@@ -133,6 +133,14 @@ describe( "thing shadow class unit tests", function() {
 
             assert(fakeCallback.calledOnce);
       });
+
+      it("should trigger callback when no options are provided", function() {
+            var thingShadows = thingShadow( thingShadowsConfig );
+            var fakeCallback = sinon.spy();
+            thingShadows.register( 'testShadow1', fakeCallback);
+
+            assert(fakeCallback.calledOnce);
+      });
    });
 
    describe( "subscribe to/unsubscribe from a non-thing topic", function() {

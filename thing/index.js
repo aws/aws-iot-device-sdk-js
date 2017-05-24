@@ -561,6 +561,9 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             if (!isUndefined(options.qos)) {
                thingShadows[thingName].qos = options.qos;
             }
+            if(typeof options === 'function' && isUndefined(callback)){
+               callback = options;
+            }
          }
          //
          // Always listen for deltas unless requested otherwise.
