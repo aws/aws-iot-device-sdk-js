@@ -335,7 +335,7 @@ from each operation.
 
 -------------------------------------------------------
 <a name="register"></a>
-### awsIot.thingShadow#register(thingName, [options], [callback] )
+### awsIot.thingShadow#register(thingName, [options, [callback]] )
 
 Register interest in the Thing Shadow named `thingName`.  The thingShadow class will
 subscribe to any applicable topics, and will fire events for the Thing Shadow
