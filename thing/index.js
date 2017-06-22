@@ -162,7 +162,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          });
          // add our callback to check the SUBACK response for granted subscriptions
          args.push(function(err, granted) {
-            if (!isUndefined(callback)) {
+            if (!isUndefined(callback) && !isUndefined(granted)) {
                if (err) {
                   callback(err);
                   return;
