@@ -128,6 +128,7 @@ function mockMQTTClient( wrapper, options ) {
 
    this.handleMessage = function(packet, callback) {
       this.commandCalled['handleMessage'] += 1;
+      callback();
    };
 
    EventEmitter.call(this);

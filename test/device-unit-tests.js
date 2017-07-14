@@ -788,10 +788,24 @@ describe( "device class unit tests", function() {
           mockMQTTClientObject.emit('connect');
           device.end( false, null );
           assert.equal(mockMQTTClientObject.commandCalled['end'], 1); // Called once
-          assert.equal(mockMQTTClientObject.commandCalled['handleMessage'], 0); // Not called yet
-          device.handleMessage( 'message', function() { console.log('callback'); } );
+
+          // simulate overriding handleMessage
+          var expectedPacket = { data: 'some data' };
+          var calledOverride = 0;
+          var calledBack = 0;
+          device.handleMessage = function customHandleMessage(packet, callback) {
+             calledOverride++;
+             assert.deepEqual(packet, expectedPacket);
+             callback();
+          };
+
+          mockMQTTClientObject.handleMessage(expectedPacket, function () {
+            calledBack++;
+            assert.equal(calledOverride, 1);
+            assert.equal(calledBack, 1);
+          });
+
           assert.equal(mockMQTTClientObject.commandCalled['end'], 1); // Called once
-          assert.equal(mockMQTTClientObject.commandCalled['handleMessage'], 1); // Called once
         });
     });
 //

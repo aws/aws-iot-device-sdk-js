@@ -820,8 +820,13 @@ function DeviceClient(options) {
    this.end = function(force, callback) {
       device.end(force, callback);
    };
-   this.handleMessage = function(packet, callback) {
-      device.handleMessage(packet, callback);
+
+   // fall back to MqttClient default implementation
+   this.handleMessage = device.handleMessage.bind(device);
+
+   // allow override
+   device.handleMessage = function(packet, callback) {
+      that.handleMessage(packet, callback);
    };
    //
    // Call this function to update the credentials used when
