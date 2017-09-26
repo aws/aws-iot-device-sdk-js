@@ -93,7 +93,7 @@ device
     console.log('connect');
     device.subscribe('topic_1');
     device.publish('topic_2', JSON.stringify({ test_data: 1}));
-    });
+  });
 
 device
   .on('message', function(topic, payload) {
