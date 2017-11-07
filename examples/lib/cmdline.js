@@ -166,10 +166,10 @@ module.exports = function(description, args, processFunction, argumentHelp) {
          }
       }
       if (!isUndefined(config.host)) {
-         args.host = config.host;
+         args.Host = config.host;
       }
       if (!isUndefined(config.port)) {
-         args.port = config.port;
+         args.Port = config.port;
       }
       //
       // When using a JSON configuration document from the AWS Console, allow
