@@ -28,7 +28,7 @@
     "mqtt"
   ],
   "dependencies": {
-    "mqtt": "2.14.0",
+    "mqtt": "2.15.0",
     "minimist": "1.2.0",
     "websocket-stream": "^5.0.1",
     "crypto-js": "3.1.6"
