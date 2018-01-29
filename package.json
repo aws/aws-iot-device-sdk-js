@@ -20,15 +20,9 @@
     "url": "http://github.com/aws/aws-iot-device-sdk-js/issues"
   },
   "license": "Apache-2.0",
-  "keywords": [
-    "api",
-    "amazon",
-    "aws",
-    "iot",
-    "mqtt"
-  ],
+  "keywords": ["api", "amazon", "aws", "iot", "mqtt"],
   "dependencies": {
-    "mqtt": "2.14.0",
+    "mqtt": "2.15.1",
     "minimist": "1.2.0",
     "websocket-stream": "^5.0.1",
     "crypto-js": "3.1.6"
