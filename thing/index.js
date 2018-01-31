@@ -123,7 +123,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    var device = deviceModule.DeviceClient(deviceOptions);
 
    // Copy device to ThingShadowsClient to use this methods
-  this._device = device;
+   this.device = device;
 
    if (!isUndefined(thingShadowOptions)) {
       if (!isUndefined(thingShadowOptions.operationTimeout)) {

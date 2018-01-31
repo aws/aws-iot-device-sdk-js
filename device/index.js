@@ -889,6 +889,7 @@ function DeviceClient(options) {
    };
 
    this.handleMessage = device.handleMessage.bind(device);
+   this.reconnect = device.reconnect.bind(device);
 
    device.handleMessage = function(packet, callback) {
       that.handleMessage(packet, callback);
