@@ -1,3 +1,8 @@
+## [2.2.1](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.1) (Jan 24, 2018)
+
+Bugfixes/Imporovements
+  - Upgrade MQTT.js to 2.15.1 to address security issue
+
 ## [2.2.0](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.0) (Nov 29, 2017)
 
 Features
