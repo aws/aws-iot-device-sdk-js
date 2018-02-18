@@ -805,7 +805,9 @@ function DeviceClient(options) {
       that.emit('offline');
    });
    device.on('error', function(error) {
-      that.emit('error', error);
+    if (error.message !== 'premature close') {
+        that.emit('error', error);
+    }
    });
    device.on('packetsend', function(packet) {
       that.emit('packetsend', packet);
