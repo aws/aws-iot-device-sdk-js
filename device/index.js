@@ -805,7 +805,9 @@ function DeviceClient(options) {
       that.emit('offline');
    });
    device.on('error', function(error) {
-      that.emit('error', error);
+    if (error !== 'premature close') {
+        that.emit('error', error);
+    }
    });
    device.on('packetsend', function(packet) {
       that.emit('packetsend', packet);
@@ -889,6 +891,7 @@ function DeviceClient(options) {
    };
 
    this.handleMessage = device.handleMessage.bind(device);
+   this.reconnect = device.reconnect.bind(device);
 
    device.handleMessage = function(packet, callback) {
       that.handleMessage(packet, callback);
