@@ -805,7 +805,7 @@ function DeviceClient(options) {
       that.emit('offline');
    });
    device.on('error', function(error) {
-    if (error.message !== 'premature close') {
+    if (error !== 'premature close') {
         that.emit('error', error);
     }
    });
