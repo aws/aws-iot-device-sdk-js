@@ -615,6 +615,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          if (deviceOptions.debug === true) {
             console.error('thing already registered: ', thingName);
          }
+         callback(new Error('thing already registered'))
       }
    };
 
