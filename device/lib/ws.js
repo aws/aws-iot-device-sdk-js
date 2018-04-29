@@ -13,15 +13,20 @@
  * permissions and limitations under the License.
  */
 
-//node.js deps
-
-//npm deps
+var url = require('url');
+var HttpsProxyAgent = require('https-proxy-agent');
 const websocket = require('websocket-stream');
 
-//app deps
+var proxy = process.env.http_proxy;
+console.log('using proxy server %j', proxy);
+
+var options = url.parse(proxy);
+
+var agent = new HttpsProxyAgent(options);
 
 function buildBuilder(client, opts) {
-   return websocket(opts.url, ['mqttv3.1'], opts.websocketOptions);
+                opts.websocketOptions.agent = agent;
+                return websocket(opts.url, ['mqttv3.1'], opts.websocketOptions);
 }
 
 module.exports = buildBuilder;
