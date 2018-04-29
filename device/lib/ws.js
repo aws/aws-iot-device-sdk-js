@@ -18,15 +18,17 @@ var HttpsProxyAgent = require('https-proxy-agent');
 const websocket = require('websocket-stream');
 
 var proxy = process.env.http_proxy;
-console.log('using proxy server %j', proxy);
-
-var options = url.parse(proxy);
-
-var agent = new HttpsProxyAgent(options);
 
 function buildBuilder(client, opts) {
-                opts.websocketOptions.agent = agent;
-                return websocket(opts.url, ['mqttv3.1'], opts.websocketOptions);
+	if(proxy) {
+		console.log('using proxy server %j', proxy);
+		var options = url.parse(proxy);
+		var agent = new HttpsProxyAgent(options);
+		opts.websocketOptions.agent = agent;
+	}
+	else
+		console.log('http_proxy isn not defined. create web socket without proxy');
+	return websocket(opts.url, ['mqttv3.1'], opts.websocketOptions);
 }
 
 module.exports = buildBuilder;
