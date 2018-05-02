@@ -33,7 +33,7 @@ function buildBuilder(client, opts) {
 		opts.websocketOptions.agent = agent;
 	}
 	else
-		console.log('http_proxy isn not defined. create web socket without proxy');
+		console.log('http_proxy is not defined. create web socket without proxy');
 	return websocket(opts.url, ['mqttv3.1'], opts.websocketOptions);
 }
 
