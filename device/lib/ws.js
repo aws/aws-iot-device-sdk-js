@@ -13,16 +13,22 @@
  * permissions and limitations under the License.
  */
 
-var url = require('url');
-var HttpsProxyAgent = require('https-proxy-agent');
+const url = require('url');
+const HttpsProxyAgent = require('https-proxy-agent');
 const websocket = require('websocket-stream');
 
-var proxy = process.env.http_proxy;
+const proxy = process.env.http_proxy;
+const proxy_usr = process.env.http_proxy_username;
+const proxy_psw = process.env.http_proxy_password;
 
 function buildBuilder(client, opts) {
 	if(proxy) {
 		console.log('using proxy server %j', proxy);
 		var options = url.parse(proxy);
+		if(proxy_usr && proxy_psw) {
+			console.log('using proxy username & password');
+			options.auth = proxy_usr + ':' + proxy_psw;
+		}
 		var agent = new HttpsProxyAgent(options);
 		opts.websocketOptions.agent = agent;
 	}
