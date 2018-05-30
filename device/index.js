@@ -441,7 +441,7 @@ function DeviceClient(options) {
       options.protocol = 'mqtts';
    }
 
-   if (isUndefined(options.host)) {
+   if (isUndefined(options.host) || isUndefined(options.url)) {
       throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
    }
 
