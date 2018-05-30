@@ -626,7 +626,9 @@ function DeviceClient(options) {
 
          options.url = url;
       } else if (protocol === 'wss-custom-auth') {
-         options.url = prepareWebSocketCustomAuthUrl(options);
+         if (!options.url) {
+            options.url = prepareWebSocketCustomAuthUrl(options);
+         }
          if (options.debug === true) {
             console.log('using websockets custom auth, will connect to \'' + options.url + '\'...');
          }
