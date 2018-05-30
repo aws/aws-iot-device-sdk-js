@@ -453,7 +453,7 @@ function DeviceClient(options) {
 
       //read and map certificates
       tlsReader(options);
-   } else if (options.protocol === 'wss' || options.protocol === 'wss-custom-auth') {
+   } else if (options.protocol === 'wss' || options.protocol === 'wss-custom-auth' || options.protocol === 'wss-presigned-url') {
       if (options.protocol === 'wss') {
          //
          // AWS access id and secret key 
@@ -498,9 +498,14 @@ function DeviceClient(options) {
             console.log('To connect via WebSocket/SigV4, AWS Access Key ID and AWS Secret Key must be passed either in options or as environment variables; see README.md');
             throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
          }
-      } else {
+      } else if (options.protocol === 'wss-custom-auth') {
          if (isUndefined(options.customAuthHeaders)) {
             console.log('To authenticate with a custom authorizer, you must provide the required HTTP headers; see README.md');
+            throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
+         }
+      } else {
+          if (isUndefined(options.url)) {
+            console.log('To authenticate with a presigned url, you must provide a presigned url; see README.md');
             throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
          }
       }
@@ -629,6 +634,12 @@ function DeviceClient(options) {
          if (!options.url) {
             options.url = prepareWebSocketCustomAuthUrl(options);
          }
+         if (options.debug === true) {
+            console.log('using websockets custom auth, will connect to \'' + options.url + '\'...');
+         }
+         // Treat the request as a standard websocket request from here onwards
+         protocol = 'wss';
+      } else if (protocol === 'wss-presigned-url') {
          if (options.debug === true) {
             console.log('using websockets custom auth, will connect to \'' + options.url + '\'...');
          }
