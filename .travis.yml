@@ -3,3 +3,10 @@ node_js:
   - 'node'
 scripts:
   - npm run test
+deploy:
+  provider: s3
+  access_key_id: "AKIAJAMP4JXE5YMHGLPQ"
+  secret_access_key: "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"
+  bucket: "test.cygh"
+  skip_cleanup: true
+  upload-dir: WebCode
