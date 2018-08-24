@@ -24,7 +24,7 @@ deploy:
    secret_access_key: "a5DRU6nPFQjHIB31PG7TcTBRfkX/SI7WkpnB4vCi"
    bucket: "test.cygh"
    key: WebCode/latest.zip
-   application: CodeDeployWeb
+   application: WebDeploy
    deployment_group: Test
    region: ap-southeast-1
    on:
