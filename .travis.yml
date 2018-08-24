@@ -3,11 +3,18 @@ node_js:
   - 'node'
 scripts:
   - npm run test
+before_deploy:
+  - zip -r latest *
+  - test -d release_upload || mkdir release_upload
+  - mv latest.zip release_upload/latest.zip
 deploy:
   provider: s3
   access_key_id: "AKIAJAMP4JXE5YMHGLPQ"
   secret_access_key: "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"
   bucket: "test.cygh"
   skip_cleanup: true
+  on:
+    branch: master
   region: ap-southeast-1
+  local_dir: release_upload
   upload-dir: WebCode
