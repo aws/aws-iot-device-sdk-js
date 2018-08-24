@@ -5,7 +5,7 @@ scripts:
   - npm run test
 before_deploy:
   - zip -r latest *
-  - test -d release_upload || mkdir release_upload
+  - test -d release_u || mkdir release_upload
   - mv latest.zip release_upload/latest.zip
 deploy:
  - provider: s3
