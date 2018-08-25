@@ -1,4 +1,4 @@
-gdsfsdfs## [2.2.1](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.1) (Jan 24, 2018)
+fdfdsgdsfsdfs## [2.2.1](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.1) (Jan 24, 2018)
 
 Bugfixes/Imporovements
   - Upgrade MQTT.js to 2.15.1 to address security issue
