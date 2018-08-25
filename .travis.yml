@@ -1,0 +1,31 @@
+language: node_js
+node_js:
+  - 'node'
+scripts:
+  - npm run test
+before_deploy:
+  - zip -r latest *
+  - test -d release_upload || mkdir release_upload
+  - mv latest.zip release_upload/latest.zip
+deploy:
+ - provider: s3
+   access_key_id: "AKIAIB6EHRURXCTXIVUA"
+   secret_access_key: "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"
+   bucket: "develcode"
+   skip_cleanup: true
+   on:
+     branch: master
+   region: ap-southeast-1
+   local_dir: release_upload
+   upload-dir: code
+
+ - provider: codedeploy
+   access_key_id: "AKIAIB6EHRURXCTXIVUA"
+   secret_access_key: "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"
+   bucket: "develcode"
+   key: code/latest.zip
+   application: Web
+   deployment_group: Code
+   region: ap-southeast-1
+   on:
+     branch: master
