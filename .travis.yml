@@ -9,23 +9,23 @@ before_deploy:
   - mv latest.zip release_upload/latest.zip
 deploy:
  - provider: s3
-   access_key_id: "AKIAJAMP4JXE5YMHGLPQ"
-   secret_access_key: "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"
-   bucket: "test.cygh"
+   access_key_id: "AKIAIB6EHRURXCTXIVUA"
+   secret_access_key: "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"
+   bucket: "develcode"
    skip_cleanup: true
    on:
      branch: master
    region: ap-southeast-1
    local_dir: release_upload
-   upload-dir: WebCode
+   upload-dir: code
 
  - provider: codedeploy
-   access_key_id: "AKIAJAMP4JXE5YMHGLPQ"
-   secret_access_key: "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"
-   bucket: "test.cygh"
-   key: WebCode/latest.zip
-   application: WebDeploy
-   deployment_group: Test
+   access_key_id: "AKIAIB6EHRURXCTXIVUA"
+   secret_access_key: "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"
+   bucket: "develcode"
+   key: code/latest.zip
+   application: Web
+   deployment_group: Code
    region: ap-southeast-1
    on:
      branch: master
