@@ -114,4 +114,4 @@ Features:
 
 Bugfixes/Improvements:
   - Fixes for github issues [#4](https://github.com/aws/aws-iot-device-sdk-js/issues/4), [#5](https://github.com/aws/aws-iot-device-sdk-js/issues/5), and [#6.](https://github.com/aws/aws-iot-device-sdk-js/issues/4)
-  fdsff:wq- Updated documentation
+  fdsfs:fdsff:wq- Updated documentation
