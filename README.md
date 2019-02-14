@@ -345,6 +345,7 @@ follows:
   * `customAuthHeaders`: used to specify your custom authorization headers when `protocol` is set to 'wss-custom-auth'. The fields 'X-Amz-CustomAuthorizer-Name', 'X-Amz-CustomAuthorizer-Signature', and the field for your token name are required.
   * `keepalive`: used to specify the time interval for each ping request. Default is set to 300 seconds to connect to AWS IoT.
   * `enableMetrics`: used to report SDK version usage metrics. It is set to true by default. To disable metrics collection, set value to false.
+  * `clean`: set to 'false' to establish a persistent session (default 'true'). Read more about persistent sessions [here](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt-persistent-sessions.html).
 
 All certificates and keys must be in PEM format.
 
