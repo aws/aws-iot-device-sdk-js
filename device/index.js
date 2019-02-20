@@ -915,6 +915,10 @@ function DeviceClient(options) {
       device.stream.emit('error', new Error('simulated connection error'));
       device.stream.end();
    };
+
+   this.reconnect = function() {
+      device.reconnect();
+   };
 }
 
 //
