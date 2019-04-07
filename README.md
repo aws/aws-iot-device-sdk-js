@@ -1268,7 +1268,7 @@ This SDK includes a companion browser application to the [Temperature Control Ex
     ```
   _NOTE_: _Although the above example shows connecting using a certificate/private key set, you can use any of the command line options described in the [Example Programs Section](#programs)._
 
-1. Open `examples/browser/temperature-monitor/index.html` in your web browser.  It should connect to AWS IoT and began displaying the status of the simulated temperature control device you started in the previous step.  If you change the device's settings, the browser window should update and display the latest status values.
+1. Open `examples/browser/temperature-monitor/index.html` in your web browser.  It should connect to AWS IoT and began displaying the status of the simulated temperature control device you started in the previous step.  If you change the device's settings, the browser window should update and display the latest status values. Check the troubleshooting section if you're having trouble about certificate authority.
 
 <a name="lifecycle-event-monitor-browser-example"></a>
 #### Lifecycle Event Monitor Browser Example Application
@@ -1283,7 +1283,7 @@ This SDK includes a browser application which demonstrates the functionality of 
     npm run-script browserize examples/browser/lifecycle/index.js
     ``` 
   
-1. Open `examples/browser/lifecycle/index.html` in your web browser.  After connecting to AWS IoT, it should display 'connected clients'.
+1. Open `examples/browser/lifecycle/index.html` in your web browser.  After connecting to AWS IoT, it should display 'connected clients'. Check the troubleshooting section if you're having trouble about certificate authority.
 1. Start programs which connect to AWS IoT (e.g., [the example programs in this package](#programs)).  Make sure that these programs are connecting to the same AWS region that your Cognito Identity Pool was created in.  The browser application will display a green box containing the client ID of each client which connects; when the client disconnects, the box will disappear.
 1. If a DynamoDB table named `LifecycleEvents` exists in your account and has a primary key named `clientId`, the lifecycle event browser monitor browser application will display the client ID contained in each row.  By updating this table using an [AWS IoT rule](http://docs.aws.amazon.com/iot/latest/developerguide/iot-rules.html) triggered by [lifecycle events](http://docs.aws.amazon.com/iot/latest/developerguide/life-cycle-events.html), you can maintain a persistent list of all of the currently connected clients within your account.
 
@@ -1300,7 +1300,7 @@ This SDK includes a browser application which implements a simple interactive MQ
     npm run-script browserize examples/browser/mqtt-explorer/index.js
     ``` 
     
-1. Open `examples/browser/mqtt-explorer/index.html` in your web browser.  After connecting to AWS IoT, it should display input fields allowing you to subscribe or publish to a topic.  By subscribing to '#', for example, you will be able to monitor all traffic within your AWS account as allowed by the policy associated with the unauthenticated role of your Cognito Identity Pool.
+1. Open `examples/browser/mqtt-explorer/index.html` in your web browser.  After connecting to AWS IoT, it should display input fields allowing you to subscribe or publish to a topic.  By subscribing to '#', for example, you will be able to monitor all traffic within your AWS account as allowed by the policy associated with the unauthenticated role of your Cognito Identity Pool. Check the troubleshooting section if you're having trouble about certificate authority.
 
 #### Reducing Browser Bundle Size
 After your application development is complete, you will probably want to reduce the size of the browser bundle.  There are a couple of easy techniques to do this, and by combining both of them you can create much smaller browser bundles.
@@ -1351,8 +1351,6 @@ After you've created the minimized bundle, you'll need to make sure that your ap
 ##### Optimization results
 By using both of the above techniques for the [MQTT Explorer example](#mqtt-explorer-browser-example), the bundle size can be reduced from 2.4MB to 615KB.
 
-<a name="troubleshooting"></a>
-
 ### Using SDK with webpack
 In order to work with webpack, you have to create a webpack package. You can put your file dependencies in `entry.js` and output it as `bundle.js`. An example is provided in the location `./examples/browser/mqtt-webpack`
 
@@ -1362,6 +1360,8 @@ npm install
 ./node_modules/.bin/webpack --config webpack.config.js
 ```
 The `index.html` will load the output file `bundle.js` and execute functions defined in `entry.js`. This duplicates the example of mqtt-explore above which loaded SDK into web browser using browserify. 
+
+<a name="troubleshooting"></a>
 
 ## Troubleshooting
 
@@ -1378,7 +1378,9 @@ but if you are using a [JSON configuration file](#configurationFile), you'll
 need to explictly specify client IDs for both programs using the '-i' command
 line option.
 * _Invalid NPM Version_:  To run the browserize.sh script which prepares the browser example applications, you'll need to use npm version 3.  This is because browserize.sh expects package dependencies to be handled using the npm version 3 strategy, which is [different than the strategy used in npm version 2](https://docs.npmjs.com/how-npm-works/npm3).  If you're having trouble running the browser application examples, make sure that you're using npm version 3.  You can check your npm version with `npm -v`.
-
+* _Certificate Authority Problems_: If you're having trouble about AWS IoT certificate problems, you're probably using Symantec signed endpoint instead of ATS (Amazon Trust Services) signed ones. If you're running any of browser examples, your browser will check the root CA and will say `ERR_CERT_AUTHORITY_INVALID` for the Symantec signed AWS IoT endpoint which they're formed in `<PREFIX>.iot.<REGION>.amazonaws.com` format. ATS signed ones are formed in `<PREFIX>-ats.iot.<REGION>.amazonaws.com` format and you should use them especially for browser examples. [Official AWS announcement](https://aws.amazon.com/about-aws/whats-new/2018/08/aws-iot-core-adds-new-endpoints-serving-amazon-trust-services-signed-certificates-to-help-customers-avoid-symantec-distrust-issues/) says as;
+>Using ATS endpoints will help customers avoid potential issues resulting from the upcoming distrust of Symantec Certificate Authorities (CAs) by Google, Apple, and Mozilla as the ATS root CAs are trusted by default in most popular browsers and operating systems.
+>
 <a name="unittests"></a>
 ## Unit Tests
 
