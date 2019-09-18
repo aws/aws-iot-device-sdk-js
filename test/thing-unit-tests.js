@@ -1529,6 +1529,43 @@ describe( "thing shadow class unit tests", function() {
           // Unregister it
           thingShadows.unregister('testShadow3');
       });
+
+      it("should not fire foreignState when update is triggered from timeout context", function() {
+          // Reinit mockMQTTClientObject
+          mockMQTTClientObject = new mockMQTTClient(); // return the mocking object
+          mockMQTTClientObject.reInitCommandCalled();
+          mockMQTTClientObject.resetPublishedMessage();
+          // Faking timer
+          var clock = sinon.useFakeTimers();
+          // Faking callback
+          var foreignCallback = sinon.spy();
+          // Init thingShadowClient
+          var thingShadows = thingShadow( {
+            keyPath:'test/data/private.pem.key',
+            certPath:'test/data/certificate.pem.crt',
+            caPath:'test/data/root-CA.crt',
+            clientId:'dummy-client-1',
+            host:'XXXX.iot.us-east-1.amazonaws.com',
+          }, {
+            operationTimeout:1000 // Set operation timeout to be 1 sec
+          } );
+          // Register callbacks
+          thingShadows.on('timeout', function () {
+              thingShadows.update('testShadow3', {});
+          });
+          thingShadows.on('foreignStateChange', foreignCallback);
+          // Register a thing
+          thingShadows.register('testShadow3');
+          // Get
+          thingShadows.get('testShadow3', 'CoolToken1');
+          // Delete
+          clock.tick(1000); // 1 sec later...
+          mockMQTTClientObject.emit('message', '$aws/things/testShadow3/shadow/update/accepted', '{"clientToken":"dummy-client-1-0", "version":2}');
+          sinon.assert.notCalled(foreignCallback);
+          // Unregister it
+          thingShadows.unregister('testShadow3');
+          clock.restore();
+      });
     });
 //
 // Verify that shadow operations are performed using the correct qos values

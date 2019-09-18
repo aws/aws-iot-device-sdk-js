@@ -442,17 +442,21 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
                   // Mark this operation as complete.
                   //
                   thingShadows[thingName].pending = false;
+
+                  //
+                  // Delete the timeout handle and client token for this thingName.
+                  //
+                  delete thingShadows[thingName].timeout;
+                  delete thingShadows[thingName].clientToken;
+
                   //
                   // Emit an event for the timeout; the clientToken is included as an argument
                   // so that the application can correlate timeout events to the operations
                   // they are associated with.
                   //
                   that.emit('timeout', thingName, clientToken);
-                  //
-                  // Delete the timeout handle and client token for this thingName.
-                  //
-                  delete thingShadows[thingName].timeout;
-                  delete thingShadows[thingName].clientToken;
+
+
                }, operationTimeout,
                thingName, clientToken);
             //
