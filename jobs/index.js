@@ -36,6 +36,15 @@ function isJobTopic(topicTokens) {
    return (topicTokens[0] === '$aws' && topicTokens[1] === 'things' && topicTokens[3] === 'jobs');
 }
 
+function isThingShadowTopic(topicTokens) {
+   //
+   // Shadow topics have the forms:
+   //
+   //      $aws/things/{thingName}/shadow/#
+   //
+   return (topicTokens[0] === '$aws' && topicTokens[1] === 'things' && topicTokens[3] === 'shadow');
+}
+
 function buildJobTopic(thingName, jobId, operation) {
    var result = '$aws/things/' + thingName + '/jobs/';
 
@@ -160,7 +169,7 @@ function jobsClient(options) {
       var topicTokens = topic.split('/');
 
       // If not a job topic emit to application and return
-      if (!isJobTopic(topicTokens)) {
+      if (!isJobTopic(topicTokens) && !isThingShadowTopic(topicTokens) && !isThingShadowTopic(topicTokens)) {
          that.emit('message', topic, payload);
          return;
       }

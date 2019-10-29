@@ -33,6 +33,15 @@ function buildThingShadowTopic(thingName, operation, type) {
    return '$aws/things/' + thingName + '/shadow/' + operation;
 }
 
+function isJobTopic(topicTokens) {
+   //
+   // Job topics have the forms:
+   //
+   //      $aws/things/{thingName}/jobs/#
+   //
+   return (topicTokens[0] === '$aws' && topicTokens[1] === 'things' && topicTokens[3] === 'jobs');
+}
+
 function isReservedTopic(topic) {
    if (topic.substring(0, 12) === '$aws/things/') {
       return true;
@@ -378,7 +387,11 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             // This isn't a Thing topic, so pass it along to the instance if they have
             // indicated they want to handle it.
             //
-            that.emit('message', topic, payload);
+            // Only emit messages that are not also from a potential job topic as well
+            if (!isJobTopic(topicTokens))
+            {
+               that.emit('message', topic, payload);
+            }
          }
       }
    });
