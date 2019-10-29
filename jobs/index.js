@@ -89,7 +89,6 @@ function jobsClient(options) {
    // Allow reuse of the device client by passing options.device
    if (!isUndefined(options.device) && typeof options.device === "object")
    {
-      console.log(typeof(options.device));
       var device = options.device;
    } else {
       //
