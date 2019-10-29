@@ -117,10 +117,17 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    //
    var connected = true;
 
-   //
-   // Instantiate the device.
-   //
-   var device = deviceModule.DeviceClient(deviceOptions);
+   // Allow reuse of the device client by passing options.device
+   if (!isUndefined(deviceOptions.device) && typeof deviceOptions.device === "object")
+   {
+      console.log(typeof(deviceOptions.device));
+      var device = deviceOptions.device;
+   } else {
+      //
+      // Instantiate the device
+      //
+      var device = deviceModule.DeviceClient(deviceOptions);
+   }
 
    if (!isUndefined(thingShadowOptions)) {
       if (!isUndefined(thingShadowOptions.operationTimeout)) {

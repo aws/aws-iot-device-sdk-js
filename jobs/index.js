@@ -86,10 +86,18 @@ function jobsClient(options) {
    //
    var jobSubscriptions = [];
 
-   //
-   // Instantiate the device
-   //
-   var device = deviceModule.DeviceClient(options);
+   // Allow reuse of the device client by passing options.device
+   if (!isUndefined(options.device) && typeof options.device === "object")
+   {
+      console.log(typeof(options.device));
+      var device = options.device;
+   } else {
+      //
+      // Instantiate the device
+      //
+      var device = deviceModule.DeviceClient(options);
+
+   }
 
    //
    // Private function to update job execution status for given thing

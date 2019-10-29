@@ -375,6 +375,7 @@ functionality to operate on Thing Shadows via the AWS IoT API.  The
 arguments in `deviceOptions` include all those in the [device class](#device).
 thingShadowOptions has the addition of the following arguments specific to the `thingShadow` class:
 
+* `device`: a pre-existing device instance for connection reuse
 * `operationTimeout`: the timeout for thing operations (default 10 seconds)
 
 Supports all events emitted by the [mqtt.Client()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) class; however, the semantics for the 
@@ -579,6 +580,9 @@ The `jobs` class wraps an instance of the `device` class with additional functio
 handle job execution management through the AWS IoT Jobs platform. Arguments in `deviceOptions` 
 are the same as those in the [device class](#device) and the `jobs` class supports all of the
 same events and functions as the `device` class.
+deviceOptions has the addition of the following arguments specific to the `jobs` class:
+
+* `device`: a pre-existing device instance for connection reuse
 
 The `jobs` class also supports the following methods:
 
