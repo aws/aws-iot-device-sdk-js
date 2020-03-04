@@ -82,7 +82,7 @@ describe( "device class unit tests", function() {
             ); 
       });
    });
-   describe( "device is instantiated with no public key", function() {
+   describe( "device is instantiated with no private key", function() {
 //
 // Verify that the device module throws an exception when there is
 // no valid public key file.
