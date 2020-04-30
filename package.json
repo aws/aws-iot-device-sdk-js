@@ -28,10 +28,10 @@
     "mqtt"
   ],
   "dependencies": {
-    "mqtt": "2.18.8",
+    "crypto-js": "3.1.6",
     "minimist": "1.2.5",
-    "websocket-stream": "^5.0.1",
-    "crypto-js": "3.1.6"
+    "mqtt": "2.18.8",
+    "websocket-stream": "git+https://github.com/rrrhys/websocket-stream.git"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
