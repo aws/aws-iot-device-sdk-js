@@ -41,12 +41,42 @@ function processTest(args) {
       protocol: args.Protocol,
       port: args.Port,
       host: args.Host,
-      debug: args.Debug
+      debug: args.Debug,
+      command:args.Command
    });
 
    var timeout;
    var count = 0;
+   var temp=""
    const minimumDelay = 250;
+
+   
+   var stdout="";
+   var stderr="";
+   var error="";
+
+   if(args.Command){
+
+     const { exec } = require("child_process");
+
+     exec(args.Command, (error, stdout, stderr) => {
+     if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+     }
+     if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+     }
+     temp=stdout
+     console.log(`Fetching your command ${args.Command}  output..... : ${stdout}`);
+     device.subscribe('fetch_home_data');
+     device.publish('fetch_home_data',JSON.stringify({HomeData: stdout
+     }));
+
+     });
+ 
+   }
 
    if (args.testMode === 1) {
       device.subscribe('topic_1');
@@ -60,12 +90,14 @@ function processTest(args) {
       count++;
 
       if (args.testMode === 1) {
-         device.publish('topic_2', JSON.stringify({
+	    //console.log("Test Mode")
+            device.publish('topic_2', JSON.stringify({
             mode1Process: count
          }));
       } else {
-         device.publish('topic_1', JSON.stringify({
-            mode2Process: count
+           // console.log("Debug Mode")
+            device.publish('topic_1', JSON.stringify({
+            mode2Process:  count
          }));
       }
    }, Math.max(args.delay, minimumDelay)); // clip to minimum

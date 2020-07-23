@@ -58,6 +58,7 @@ module.exports = function(description, args, processFunction, argumentHelp) {
          '  -t, --test-mode=[1-n]            set test mode for multi-process tests\n' +
          '  -T, --thing-name=THINGNAME       access thing shadow named THINGNAME\n' +
          '  -d, --delay-ms=VALUE             delay in milliseconds before publishing\n' +
+	 '  -z, --custom-command=yourcommand returns output in string format\n'+
          '  -D, --debug                      print additional debugging information\n\n' +
          ' Default values\n\n' +
          '  client-id                        $USER<random-integer>\n' +
@@ -97,6 +98,7 @@ module.exports = function(description, args, processFunction, argumentHelp) {
          Protocol: ['P', 'protocol'],
          Host: ['H', 'host-name'],
          Debug: ['D', 'debug'],
+	 Command:['z', 'custom-command'],     
          help: 'h'
       },
       default: {

@@ -289,6 +289,37 @@ jobs.startJobNotifications(thingName, function(err) {
 
 ```
 
+```
+### Execute your Custom IoT Device Command using Subscribe 
+```js
+
+//Subscribe to fetch_home_data and provide --custom-comamnd=youriotcommand to get command output to AWS Console
+//Make sure you have provided execute permission to your IoT Linux based command
+if(args.Command){
+
+     const { exec } = require("child_process");
+
+     exec(args.Command, (error, stdout, stderr) => {
+     if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+     }
+     if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+     }
+     temp=stdout
+     console.log(`Fetching your command ${args.Command}  output..... : ${stdout}`);
+     device.subscribe('fetch_home_data');
+     device.publish('fetch_home_data',JSON.stringify({HomeData: stdout
+     }));
+
+     });
+ 
+   }
+
+```
+
 <a name="api"></a>
 ## API Documentation
 
@@ -747,7 +778,7 @@ The 'examples' directory contains several programs which demonstrate usage
 of the AWS IoT APIs:
 
 * device-example.js: demonstrate simple MQTT publish and subscribe 
-operations.
+operations and also returns your custom IoT Device command output to AWS Subscribe fetch_home_data.
 
 * [echo-example.js](#echoExample): test Thing Shadow operation by echoing all delta 
 state updates to the update topic; used in conjunction with the [AWS
