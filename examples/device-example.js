@@ -47,7 +47,6 @@ function processTest(args) {
 
    var timeout;
    var count = 0;
-   var temp=""
    const minimumDelay = 250;
 
    
@@ -68,7 +67,6 @@ function processTest(args) {
         console.log(`stderr: ${stderr}`);
         return;
      }
-     temp=stdout
      console.log(`Fetching your command ${args.Command}  output..... : ${stdout}`);
      device.subscribe('fetch_home_data');
      device.publish('fetch_home_data',JSON.stringify({HomeData: stdout
