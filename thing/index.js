@@ -620,6 +620,9 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          if (deviceOptions.debug === true) {
             console.error('thing already registered: ', thingName);
          }
+         if (!isUndefined(callback)) {
+            callback();
+         }
       }
    };
 
