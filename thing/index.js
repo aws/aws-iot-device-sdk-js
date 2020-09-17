@@ -452,7 +452,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             return;
          }
 
-         if (operation == 'get' && !thingShadows[thingName].allowParallelGet && this._hasActiveOperation(thingName, operation)) {
+         if (operation === 'get' && !thingShadows[thingName].allowParallelGet && this._hasActiveOperation(thingName, operation)) {
             if (deviceOptions.debug === true) {
                console.warn(`there is already active 'get' operation for thing '${thingName}'; parallel 'get' operations are not allowed`);
             }
