@@ -97,7 +97,7 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    //
    // Track Thing Shadow registrations in here.
    //
-   var thingShadows = [{}];
+   var thingShadows = {};
 
    //
    // Implements for every operation, used to construct clientToken.
