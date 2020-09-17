@@ -136,11 +136,27 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          return;
       }
 
-      thingShadows[thingName].activeOperations.push({ 
-         method: method, 
-         clientToken: clientToken, 
-         timeoutId: timeoutId, 
+      var operation = thingShadows[thingName].activeOperations.find(function(operation) {
+         return operation.clientToken === clientToken;
       });
+
+      if (operation) {
+         // Even though this should never happen
+         // we want to make sure that no 2 operations with the same clientToken are added to the list
+         if (operation.timeoutId !== timeoutId) {
+            clearTimeout(operation.timeoutId);
+            operation.timeoutId = timeoutId;
+         }
+         if (operation.method !== method) {
+            operation.method = method;
+         }
+      } else {
+         thingShadows[thingName].activeOperations.push({ 
+            method: method,
+            clientToken: clientToken,
+            timeoutId: timeoutId
+         });
+      }
    }
 
    this._deleteActiveOperationByToken = function(thingName, clientToken, withTimeout) {
@@ -458,13 +474,8 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
             // AWS IoT restricts client tokens to 64 bytes, so use only the last 48
             // characters of the client ID when constructing a client token.
             //
-            var clientIdLength = deviceOptions.clientId.length;
-
-            if (clientIdLength > 48) {
-               clientToken = deviceOptions.clientId.substr(clientIdLength - 48) + '-' + operationCount++;
-            } else {
-               clientToken = deviceOptions.clientId + '-' + operationCount++;
-            }
+            var clientId = deviceOptions.clientId
+            clientToken = (clientId.length > 48 ? clientId.substr(clientId.length - 48) : clientId) + '-' + (operationCount++);
          } else {
             clientToken = stateObject.clientToken;
          }
