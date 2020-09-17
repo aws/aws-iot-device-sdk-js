@@ -446,6 +446,11 @@ function DeviceClient(options) {
       throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
    }
 
+   // set SNI, do not override existing definitions if available
+   if (isUndefined(options.servername)) {
+      options.servername = options.host.split(':')[0];  // Stripping out port if it exists along with host name
+   }
+
    if (options.protocol === 'mqtts') {
       // set port, do not override existing definitions if available
       if (isUndefined(options.port)) {

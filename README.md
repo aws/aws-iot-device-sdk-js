@@ -1,15 +1,10 @@
-## New Version Available
-
-A new AWS IoT Device SDK is [now available](https://github.com/awslabs/aws-iot-device-sdk-js-v2). It is a complete rework, built to improve reliability, performance, and security. We invite your feedback!
-
-This SDK will no longer receive feature updates, but will receive security updates.
-
 # AWS IoT SDK for JavaScript
-The aws-iot-device-sdk.js package allows developers to write JavaScript 
+The aws-iot-device-sdk.js package allows developers to write JavaScript
 applications which access the AWS IoT Platform via [MQTT or MQTT over the Secure WebSocket Protocol](http://docs.aws.amazon.com/iot/latest/developerguide/protocols.html).  It can be used in Node.js environments as well as in browser applications.
 
 * [Overview](#overview)
 * [Installation](#install)
+* [Mac-Only TLS Behavior](#mac-tls-warning)
 * [Examples](#examples)
 * [API Documentation](#api)
 * [Connection Types](#connections)
@@ -22,7 +17,7 @@ applications which access the AWS IoT Platform via [MQTT or MQTT over the Secure
 
 <a name="overview"></a>
 ## Overview
-This document provides instructions on how to install and configure the AWS 
+This document provides instructions on how to install and configure the AWS
 IoT device SDK for JavaScript, and includes examples demonstrating use of the
 SDK APIs.
 
@@ -40,27 +35,27 @@ get the current state of, or delete Thing Shadows from AWS IoT.  Thing
 Shadows allow applications and devices to synchronize their state on the AWS IoT platform.
 For example, a remote device can update its Thing Shadow in AWS IoT, allowing
 a user to view the device's last reported state via a mobile app.  The user
-can also update the device's Thing Shadow in AWS IoT and the remote device 
-will synchronize with the new state.  The 'thingShadow' class supports multiple 
+can also update the device's Thing Shadow in AWS IoT and the remote device
+will synchronize with the new state.  The 'thingShadow' class supports multiple
 Thing Shadows per mqtt connection and allows pass-through of non-Thing-Shadow
 topics and mqtt events.
 
 ### Jobs
 The 'jobs' class implements functionality to interact with the AWS IoT Jobs service. The
-IoT Job service manages deployment of IoT fleet wide tasks such as device software/firmware 
+IoT Job service manages deployment of IoT fleet wide tasks such as device software/firmware
 deployments and updates, rotation of security certificates, device reboots, and custom device
-specific management tasks. 
+specific management tasks.
 
 Included in this package is an example 'agent'. The agent can be used either as a stand-alone
-program to manage installation and maintenance of files and other running processes or it can 
+program to manage installation and maintenance of files and other running processes or it can
 be incorporated into a customized agent to meet specific application needs.
 
 <a name="install"></a>
 ## Installation
 
-**NOTE:** AWS IoT Node.js SDK will only support Node version 4 or above. 
+**NOTE:** AWS IoT Node.js SDK will only support Node version 4 or above.
 
-You can check your node version by 
+You can check your node version by
 
 ```sh
 node -v
@@ -80,6 +75,14 @@ cd aws-iot-device-sdk-js
 npm install
 ```
 
+<a name="mac-tls-warning"></a>
+## Mac-Only TLS Behavior
+
+Please note that on Mac, once a private key is used with a certificate,
+that certificate-key pair is imported into the Mac Keychain.
+All subsequent uses of that certificate will use the stored private key and
+ignore anything passed in programmatically.
+
 <a name="examples"></a>
 ## Examples
 
@@ -90,8 +93,8 @@ var awsIot = require('aws-iot-device-sdk');
 //
 // Replace the values of '<YourUniqueClientIdentifier>' and '<YourCustomEndpoint>'
 // with a unique client identifier and custom host endpoint provided in AWS IoT.
-// NOTE: client identifiers must be unique within your AWS account; if a client attempts 
-// to connect with a client identifier which is already in use, the existing 
+// NOTE: client identifiers must be unique within your AWS account; if a client attempts
+// to connect with a client identifier which is already in use, the existing
 // connection will be terminated.
 //
 var device = awsIot.device({
@@ -125,8 +128,8 @@ var awsIot = require('aws-iot-device-sdk');
 //
 // Replace the values of '<YourUniqueClientIdentifier>' and '<YourCustomEndpoint>'
 // with a unique client identifier and custom host endpoint provided in AWS IoT cloud
-// NOTE: client identifiers must be unique within your AWS account; if a client attempts 
-// to connect with a client identifier which is already in use, the existing 
+// NOTE: client identifiers must be unique within your AWS account; if a client attempts
+// to connect with a client identifier which is already in use, the existing
 // connection will be terminated.
 //
 var thingShadows = awsIot.thingShadow({
@@ -170,7 +173,7 @@ thingShadows.on('connect', function() {
 // be sent in a 'status' event when the operation completes, allowing you
 // to know whether or not the update was successful.  If the update method
 // returns null, it's because another operation is currently in progress and
-// you'll need to wait until it completes (or times out) before updating the 
+// you'll need to wait until it completes (or times out) before updating the
 // shadow.
 //
        if (clientTokenUpdate === null)
@@ -179,12 +182,12 @@ thingShadows.on('connect', function() {
        }
     });
 });
-thingShadows.on('status', 
+thingShadows.on('status',
     function(thingName, stat, clientToken, stateObject) {
        console.log('received '+stat+' on '+thingName+': '+
                    JSON.stringify(stateObject));
 //
-// These events report the status of update(), get(), and delete() 
+// These events report the status of update(), get(), and delete()
 // calls.  The clientToken value associated with the event will have
 // the same value which was returned in an earlier call to get(),
 // update(), or delete().  Use status events to keep track of the
@@ -192,7 +195,7 @@ thingShadows.on('status',
 //
     });
 
-thingShadows.on('delta', 
+thingShadows.on('delta',
     function(thingName, stateObject) {
        console.log('received delta on '+thingName+': '+
                    JSON.stringify(stateObject));
@@ -218,8 +221,8 @@ var awsIot = require('aws-iot-device-sdk');
 //
 // Replace the values of '<YourUniqueClientIdentifier>' and '<YourCustomEndpoint>'
 // with a unique client identifier and custom host endpoint provided in AWS IoT cloud
-// NOTE: client identifiers must be unique within your AWS account; if a client attempts 
-// to connect with a client identifier which is already in use, the existing 
+// NOTE: client identifiers must be unique within your AWS account; if a client attempts
+// to connect with a client identifier which is already in use, the existing
 // connection will be terminated.
 //
 var jobs = awsIot.jobs({
@@ -247,14 +250,14 @@ jobs
 
 //
 // To subscribe to job execution events call the subscribeToJobs method which takes
-// a callback that will be invoked when a job execution is available or an error 
+// a callback that will be invoked when a job execution is available or an error
 // occurs. The job object passed to the callback contains information about the job
-// execution and methods for updating the job execution status. Details covered 
+// execution and methods for updating the job execution status. Details covered
 // in the API documentation below.
 //
-jobs.subscribeToJobs(thingName, function(err, job) { 
+jobs.subscribeToJobs(thingName, function(err, job) {
    if (isUndefined(err)) {
-      console.log('default job handler invoked, jobId: ' + job.id.toString()); 
+      console.log('default job handler invoked, jobId: ' + job.id.toString());
       console.log('job document: ' + job.document);
    }
    else {
@@ -262,9 +265,9 @@ jobs.subscribeToJobs(thingName, function(err, job) {
    }
 });
 
-jobs.subscribeToJobs(thingName, 'customJob', function(err, job) { 
+jobs.subscribeToJobs(thingName, 'customJob', function(err, job) {
    if (isUndefined(err)) {
-      console.log('customJob operation handler invoked, jobId: ' + job.id.toString()); 
+      console.log('customJob operation handler invoked, jobId: ' + job.id.toString());
       console.log('job document: ' + job.document);
    }
    else {
@@ -320,16 +323,16 @@ jobs.startJobNotifications(thingName, function(err) {
 <a name="device"></a>
 ### awsIot.device(options)
 
-Returns a wrapper for the [mqtt.Client()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) 
-class, configured for a TLS connection with the AWS IoT platform and with 
-arguments as specified in `options`.  The AWSIoT-specific arguments are as 
+Returns a wrapper for the [mqtt.Client()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#client)
+class, configured for a TLS connection with the AWS IoT platform and with
+arguments as specified in `options`.  The AWSIoT-specific arguments are as
 follows:
 
   * `host`: the AWS IoT endpoint you will use to connect
   * `clientId`: the client ID you will use to connect to AWS IoT
   * `certPath`: path of the client certificate file
   * `keyPath`: path of the private key file associated with the client certificate
-  * `caPath`: path of your CA certificate file 
+  * `caPath`: path of your CA certificate file
   * `clientCert`: same as `certPath`, but can also accept a buffer containing client certificate data
   * `privateKey`: same as `keyPath`, but can also accept a buffer containing private key data
   * `caCert`: same as `caPath`, but can also accept a buffer containing CA certificate data
@@ -355,7 +358,7 @@ follows:
 All certificates and keys must be in PEM format.
 
 `options` also contains arguments specific to mqtt.  See [the mqtt client documentation]
-(https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) for details 
+(https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) for details
 of these arguments. Note, AWS IoT doesn't support retained messages; setting `retain` flag to
 'true' for message publishing, including Last Will and Testament messages, will result in
 connection termination. For AWS IoT protocol specifics, please visit [here](http://docs.aws.amazon.com/iot/latest/developerguide/protocols.html).
@@ -383,7 +386,7 @@ thingShadowOptions has the addition of the following arguments specific to the `
 
 * `operationTimeout`: the timeout for thing operations (default 10 seconds)
 
-Supports all events emitted by the [mqtt.Client()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) class; however, the semantics for the 
+Supports all events emitted by the [mqtt.Client()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#client) class; however, the semantics for the
 `message` event are slightly different and additional events are available
 as described below:
 
@@ -472,7 +475,7 @@ determine how to treat the data (e.g. use a time stamp property to know how old/
 it is).
 
 If `enableVersioning` is set to true, version numbers will be sent with each operation.
-AWS IoT maintains version numbers for each shadow, and will reject operations which 
+AWS IoT maintains version numbers for each shadow, and will reject operations which
 contain the incorrect version; in applications where multiple clients update the same
 shadow, clients can use versioning to avoid overwriting each other's changes.
 
@@ -490,15 +493,15 @@ for `thingName`.
 <a name="update"></a>
 ### awsIot.thingShadow#update(thingName, stateObject)
 
-Update the Thing Shadow named `thingName` with the state specified in the 
-JavaScript object `stateObject`.  `thingName` must have been previously 
+Update the Thing Shadow named `thingName` with the state specified in the
+JavaScript object `stateObject`.  `thingName` must have been previously
 registered
 using [awsIot.thingShadow#register()](#register).  The thingShadow class will subscribe
 to all applicable topics and publish `stateObject` on the <b>update</b> sub-topic.
 
 This function returns a `clientToken`, which is a unique value associated with
-the update operation.  When a 'status' or 'timeout' event is emitted, 
-the `clientToken` will be supplied as one of the parameters, allowing the 
+the update operation.  When a 'status' or 'timeout' event is emitted,
+the `clientToken` will be supplied as one of the parameters, allowing the
 application to keep track of the status of each operation.  The caller may
 create their own `clientToken` value; if `stateObject` contains a `clientToken`
 property, that will be used rather than the internally generated value.  Note
@@ -510,13 +513,13 @@ returns 'null' if an operation is already in progress.
 ### awsIot.thingShadow#get(thingName, [clientToken])
 
 Get the current state of the Thing Shadow named `thingName`, which must have
-been previously registered using [awsIot.thingShadow#register()](#register).  The 
-thingShadow class will subscribe to all applicable topics and publish on the 
+been previously registered using [awsIot.thingShadow#register()](#register).  The
+thingShadow class will subscribe to all applicable topics and publish on the
 <b>get</b> sub-topic.
 
 This function returns a `clientToken`, which is a unique value associated with
-the get operation.  When a 'status or 'timeout' event is emitted, 
-the `clientToken` will be supplied as one of the parameters, allowing the 
+the get operation.  When a 'status or 'timeout' event is emitted,
+the `clientToken` will be supplied as one of the parameters, allowing the
 application to keep track of the status of each operation.  The caller may
 supply their own `clientToken` value (optional); if supplied, the value of
 `clientToken` will be used rather than the internally generated value.  Note
@@ -533,8 +536,8 @@ will subscribe to all applicable topics and publish on the <b>delete</b>
 sub-topic.
 
 This function returns a `clientToken`, which is a unique value associated with
-the delete operation.  When a 'status' or 'timeout' event is emitted, 
-the `clientToken` will be supplied as one of the parameters, allowing the 
+the delete operation.  When a 'status' or 'timeout' event is emitted,
+the `clientToken` will be supplied as one of the parameters, allowing the
 application to keep track of the status of each operation.  The caller may
 supply their own `clientToken` value (optional); if supplied, the value of
 `clientToken` will be used rather than the internally generated value.  Note
@@ -545,7 +548,7 @@ function returns 'null' if an operation is already in progress.
 <a name="publish"></a>
 ### awsIot.thingShadow#publish(topic, message, [options], [callback])
 
-Identical to the [mqtt.Client#publish()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#publish) 
+Identical to the [mqtt.Client#publish()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#publish)
 method, with the restriction that the topic may not represent a Thing Shadow.
 This method allows the user to publish messages to topics on the same connection
 used to access Thing Shadows.
@@ -554,35 +557,35 @@ used to access Thing Shadows.
 <a name="subscribe"></a>
 ### awsIot.thingShadow#subscribe(topic, [options], [callback])
 
-Identical to the [mqtt.Client#subscribe()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#subscribe) 
+Identical to the [mqtt.Client#subscribe()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#subscribe)
 method, with the restriction that the topic may not represent a Thing Shadow.
-This method allows the user to subscribe to messages from topics on the same 
+This method allows the user to subscribe to messages from topics on the same
 connection used to access Thing Shadows.
 
 -------------------------------------------------------
 <a name="unsubscribe"></a>
 ### awsIot.thingShadow#unsubscribe(topic, [callback])
 
-Identical to the [mqtt.Client#unsubscribe()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#unsubscribe) 
+Identical to the [mqtt.Client#unsubscribe()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#unsubscribe)
 method, with the restriction that the topic may not represent a Thing Shadow.
-This method allows the user to unsubscribe from topics on the same 
+This method allows the user to unsubscribe from topics on the same
 used to access Thing Shadows.
 
 -------------------------------------------------------
 <a name="end"></a>
 ### awsIot.thingShadow#end([force], [callback])
 
-Invokes the [mqtt.Client#end()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#end) 
-method on the MQTT connection owned by the `thingShadow` class.  The `force` 
-and `callback` parameters are optional and identical in function to the 
+Invokes the [mqtt.Client#end()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#end)
+method on the MQTT connection owned by the `thingShadow` class.  The `force`
+and `callback` parameters are optional and identical in function to the
 parameters in the [mqtt.Client#end()](https://github.com/mqttjs/MQTT.js/blob/master/README.md#end) method.
 
 -------------------------------------------------------
 <a name="jobs"></a>
 ### awsIot.jobs(deviceOptions)
 
-The `jobs` class wraps an instance of the `device` class with additional functionality to 
-handle job execution management through the AWS IoT Jobs platform. Arguments in `deviceOptions` 
+The `jobs` class wraps an instance of the `device` class with additional functionality to
+handle job execution management through the AWS IoT Jobs platform. Arguments in `deviceOptions`
 are the same as those in the [device class](#device) and the `jobs` class supports all of the
 same events and functions as the `device` class.
 
@@ -592,10 +595,10 @@ The `jobs` class also supports the following methods:
 <a name="subscribeToJobs"></a>
 ### awsIot.jobs#subscribeToJobs(thingName, [operationName], callback)
 
-Subscribes to job execution notifications for the thing named `thingName`. If 
-`operationName` is specified then the callback will only be called when a job 
+Subscribes to job execution notifications for the thing named `thingName`. If
+`operationName` is specified then the callback will only be called when a job
 ready for execution contains a property called `operation` in its job document with
-a value matching `operationName`. If `operationName` is omitted then the callback 
+a value matching `operationName`. If `operationName` is omitted then the callback
 will be called for every job ready for execution that does not match another
 `subscribeToJobs` subscription.
 
@@ -610,7 +613,7 @@ will be called for every job ready for execution that does not match another
 <a name="unsubscribeFromJobs"></a>
 ### awsIot.jobs#unsubscribeFromJobs(thingName, [operationName], callback)
 
-Unsubscribes from job execution notifications for the thing named `thingName` having 
+Unsubscribes from job execution notifications for the thing named `thingName` having
 operations with a value of the given `operationName`. If `operationName` is omitted then
 the default handler for the thing with the given name is unsubscribed.
 
@@ -669,44 +672,44 @@ Returns the current job status according to AWS Orchestra.
 -------------------------------------------------------
 <a name="inProgress"></a>
 ### job.inProgress([statusDetails],[callback])
-Update the status of the job execution to be IN_PROGRESS for the thing associated with the job. 
+Update the status of the job execution to be IN_PROGRESS for the thing associated with the job.
 
-* `statusDetails` optional document describing the status details of the in progress job e.g. 
+* `statusDetails` optional document describing the status details of the in progress job e.g.
 ```
 {
     "string": "string",
     "progress": "50%"
 }
 ```
-* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred 
+* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred
 
 -------------------------------------------------------
 <a name="failed"></a>
 ### job.failed([statusDetails],[callback])
-Update the status of the job execution to be FAILED for the thing associated with the job. 
+Update the status of the job execution to be FAILED for the thing associated with the job.
 
-* `statusDetails` optional document describing the status details of the in progress job e.g. 
+* `statusDetails` optional document describing the status details of the in progress job e.g.
 ```
 {
     "string": "string",
     "progress": "0%"
 }
 ```
-* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred 
+* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred
 
 -------------------------------------------------------
 <a name="succeeded"></a>
 ### job.succeeded([statusDetails],[callback])
-Update the status of the job execution to be SUCCESS for the thing associated with the job. 
+Update the status of the job execution to be SUCCESS for the thing associated with the job.
 
-* `statusDetails` optional document describing the status details of the in progress job e.g. 
+* `statusDetails` optional document describing the status details of the in progress job e.g.
 ```
 {
     "string": "string",
     "progress": "100%"
 }
 ```
-* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred 
+* `callback` - function(err) optional callback for when the operation completes, err is null if no error occurred
 
 <a name="connections"></a>
 ## Connection Types
@@ -726,7 +729,7 @@ set the `protocol` option to `wss-custom-auth`.
 ### Custom Authorization Configuration
 
 To use custom authorization, you must first set up an authorizer function in Lambda and register it
-with IoT. Once you do, you will be able to authenticate using this function. To use custom auth, 
+with IoT. Once you do, you will be able to authenticate using this function. To use custom auth,
 set the `customAuthHeaders` option to your headers object when instantiating the [awsIotDevice()](#device)
 or [awsIot.thingShadow()](#thingShadow) classes. The headers object is an object containing the header name
 and values as key-value pairs:
@@ -746,12 +749,12 @@ and values as key-value pairs:
 The 'examples' directory contains several programs which demonstrate usage
 of the AWS IoT APIs:
 
-* device-example.js: demonstrate simple MQTT publish and subscribe 
+* device-example.js: demonstrate simple MQTT publish and subscribe
 operations.
 
-* [echo-example.js](#echoExample): test Thing Shadow operation by echoing all delta 
+* [echo-example.js](#echoExample): test Thing Shadow operation by echoing all delta
 state updates to the update topic; used in conjunction with the [AWS
-IoT Console](https://console.aws.amazon.com/iot) to verify connectivity 
+IoT Console](https://console.aws.amazon.com/iot) to verify connectivity
 with the AWS IoT platform.
 
 * thing-example.js: use a Thing Shadow to automatically synchronize
@@ -767,7 +770,7 @@ Thing Shadows.
 job execution status.
 
 * [jobs-agent.js](#jobsAgent): example agent to handle standard operations such as reboot,
-report system status, and shutdown. It also handles installation of files including but not 
+report system status, and shutdown. It also handles installation of files including but not
 limited to configuration files, program updates and security certificates. It also can install
 and launch other programs and manage their executions (start, stop and restart).
 
@@ -781,7 +784,7 @@ node examples/<EXAMPLE-PROGRAM> -h
 **NOTE:**  You have to use the certificate created in the same region as your host end point.
 You will also need to use unique custom endpoint with '-H' command line option when connect examples to IoT cloud.
 <a name="websockets"></a>
-### WebSocket Configuration 
+### WebSocket Configuration
 
 The example programs can be configured to use a WebSocket/TLS connection to
 the AWS IoT platform by adding '--protocol=wss' to the command line to
@@ -792,7 +795,7 @@ override the default setting of 'mqtts'.
 ```
 
 When using a WebSocket/TLS connection, you have the following options to set credentials.
-#### Export variables to system environment 
+#### Export variables to system environment
 
 ```sh
 export AWS_ACCESS_KEY_ID=[a valid AWS access key ID]
@@ -811,9 +814,9 @@ IAM, [visit the AWS IAM home page.](https://aws.amazon.com/iam/)
 <a name="certificates"></a>
 ### Certificate Configuration
 
-When not configured to use a WebSocket/TLS connection, the example programs 
+When not configured to use a WebSocket/TLS connection, the example programs
 require a client certificate and private key (created using either the [AWS
-IoT Console](https://console.aws.amazon.com/iot) or the 
+IoT Console](https://console.aws.amazon.com/iot) or the
 [AWS IoT CLI](https://aws.amazon.com/cli/)) in order to authenticate with
 AWS IoT.  Each example program uses command line options to specify the
 names and/or locations of certificates as follows:
@@ -845,10 +848,10 @@ you don't have to specify absolute pathnames for each file.
 <a href="configurationFile"></a>
 #### Use a configuration file
 
-The [AWS IoT Console](https://console.aws.amazon.com/iot) can generate JSON 
+The [AWS IoT Console](https://console.aws.amazon.com/iot) can generate JSON
 configuration data specifying the parameters required to connect a device
 to the AWS IoT Platform.  The JSON configuration data includes pathnames
-to certificates, the hostname and port number, etc...  The command line 
+to certificates, the hostname and port number, etc...  The command line
 option '--configuration-file (-F)' is used when reading parameters from a
 configuration file.
 
@@ -871,8 +874,8 @@ properties:
 * _The '-f' (certificate directory) and '-F' (configuration file) options
 can be combined so that you don't have to use absolute pathnames in the
 configuration file._
-* _When using a configuration file to run any of the example programs other 
-than [echo-example.js](#echoExample), you **must** specify different client 
+* _When using a configuration file to run any of the example programs other
+than [echo-example.js](#echoExample), you **must** specify different client
 IDs for each process using the '-i' command line option._
 
 ### device-example.js
@@ -883,7 +886,7 @@ The command line option '--test-mode (-t)' is used to set which role
 each process performs.  It's easiest to run each process in its own
 terminal window so that you can see the output generated by each.  Note
 that in the following examples, all certificates are located in the
-~/certs directory and have the default names as specified in the 
+~/certs directory and have the default names as specified in the
 [Certificate Configuration section](#certificates).
 
 #### _Terminal Window 1_
@@ -897,11 +900,11 @@ node examples/device-example.js -f ~/certs --test-mode=2 -H <PREFIX>.iot.<REGION
 ```
 
 ### thing-example.js
-Similar to device-example.js, thing-example.js is also run as two 
+Similar to device-example.js, thing-example.js is also run as two
 processes which communicate with one another via the AWS IoT platform.
 thing-example.js uses a Thing Shadow to synchronize state between the
 two processes, and the command line option '--test-mode (-t)' is used
-to set which role each process performs.  As with device-example.js, 
+to set which role each process performs.  As with device-example.js,
 it's best to run each process in its own terminal window or on separate
 hosts.  In this example, the example programs are configured to use
 WebSocket/TLS connections to the AWS IoT platform as specified in the
@@ -918,15 +921,15 @@ node examples/thing-example.js -P=wss --test-mode=2 -H <PREFIX>.iot.<REGION>.ama
 ```
 
 ### thing-passthrough-example.js
-Similar to thing-example.js, thing-passthrough-example.js is also run 
+Similar to thing-example.js, thing-passthrough-example.js is also run
 as two processes which communicate with one another via the AWS IoT platform.
 thing-passthrough-example.js uses a Thing Shadow to synchronize state
 from one process to another, and uses MQTT publish/subscribe to send
 information in the other direction.  The command line option '--test-mode (-t)'
-is used to set which role each process performs.  As with thing-example.js, 
-it's best to run each process in its own terminal window.  Note 
+is used to set which role each process performs.  As with thing-example.js,
+it's best to run each process in its own terminal window.  Note
 that in the following examples, all certificates are located in the
-~/certs directory and have the default names as specified in the 
+~/certs directory and have the default names as specified in the
 [Certificate Configuration section](#certificates).
 
 #### _Terminal Window 1_
@@ -941,9 +944,9 @@ node examples/thing-passthrough-example.js -f ~/certs --test-mode=2 -H <PREFIX>.
 
 <a name="echoExample"></a>
 ### echo-example.js
-echo-example.js is used in conjunction with the 
-[AWS IoT Console](https://console.aws.amazon.com/iot) to verify 
-connectivity with the AWS IoT platform and to perform interactive 
+echo-example.js is used in conjunction with the
+[AWS IoT Console](https://console.aws.amazon.com/iot) to verify
+connectivity with the AWS IoT platform and to perform interactive
 observation of Thing Shadow operation.  In the following example, the
 program is run using the configuration file '../config.json', and
 the certificates are located in the '~/certs' directory.  Here, the
@@ -958,22 +961,22 @@ node examples/echo-example.js -F ../config.json -f ~/certs --thing-name testThin
 <a name="temp-control"></a>
 ### temperature-control.js
 temperature-control.js is an interactive simulation which demonstrates
-how Thing Shadows can be used to easily synchronize applications 
-and internet-connected devices.  
+how Thing Shadows can be used to easily synchronize applications
+and internet-connected devices.
 
 Like thing-example.js, temperature-control.js runs in two
 separate terminal windows and is configured via command-line options;
 in the following example, all certificates are located in the ~/certs
-directory and have the default names as specified in the 
+directory and have the default names as specified in the
 [Certificate Configuration section](#certificates).  The process running
-with '--test-mode=2' simulates an internet-connected temperature control 
+with '--test-mode=2' simulates an internet-connected temperature control
 device, and the process running with '--test-mode=1' simulates a mobile
 application which is monitoring/controlling it.  The processes may be
 run on different hosts if desired.
 
 #### _Installing Dependencies_
 temperature-control.js
-uses the [blessed.js](https://github.com/chjj/blessed) and [blessed-contrib.js](https://github.com/yaronn/blessed-contrib) libraries to provide an 
+uses the [blessed.js](https://github.com/chjj/blessed) and [blessed-contrib.js](https://github.com/yaronn/blessed-contrib) libraries to provide an
 interactive terminal interface; it looks best on an 80x25 terminal with a
 black background and white or green text and requires UTF-8 character
 encoding.  You'll need to install these libraries in the examples/temperature-control
@@ -999,19 +1002,19 @@ node examples/temperature-control/temperature-control.js -f ~/certs --test-mode=
 #### _Using the simulation_
 The simulated temperature control device has two controls; _Setpoint_ and
 _Status_.  _Status_ controls whether or not the device is active, and
-_Setpoint_ controls the interior temperature the device will attempt to 
+_Setpoint_ controls the interior temperature the device will attempt to
 achieve.  In addition, the device reports the current interior and exterior
 temperatures as well as its operating state (_heating_, _cooling_, or
 _stopped_).
 
 Two Thing Shadows are used to connect the simulated device and mobile
-application; one contains the controls and the other contains the 
+application; one contains the controls and the other contains the
 measured temperatures and operating state.  Both processes can update the
 controls, but only the device can update the measured temperatures and
 the operating state.
 
-Controlling the simulation is done using the <kbd>up</kbd>, 
-<kbd>down</kbd>, <kbd>left</kbd>, <kbd>right</kbd>, and 
+Controlling the simulation is done using the <kbd>up</kbd>,
+<kbd>down</kbd>, <kbd>left</kbd>, <kbd>right</kbd>, and
 <kbd>Enter</kbd> keys as follows:
 
 * <kbd>up</kbd> increase the Setpoint
@@ -1043,8 +1046,8 @@ _Status_ toggles, re-synchronization with the Thing Shadow, etc...
 
 * Mode: Toggle the device _Status_.  _Status_ can be controlled from both
 the simulated device and the mobile application.
-* Network: Toggle the network connectivity of the device or mobile 
-application; this can be used to observe how both sides re-synchronize 
+* Network: Toggle the network connectivity of the device or mobile
+application; this can be used to observe how both sides re-synchronize
 when connectivity is restored.
 
 In this example, the mobile application is disconnected from the network.  Although it has
@@ -1060,13 +1063,13 @@ synchronize to the device's current state.
 
 ##### Exiting the Simulation
 
-The simulation can be exited at any time by pressing <kbd>q</kbd>, 
+The simulation can be exited at any time by pressing <kbd>q</kbd>,
 <kbd>Ctrl</kbd>+<kbd>c</kbd>, or by selecting 'exit' on the menu bar.
 
 <a name="jobsExample"></a>
 ### jobs-example.js
-jobs-example.js, like the [echo-example.js](#echoExample) can receive messages via the [AWS IoT Console](https://console.aws.amazon.com/iot) 
-to verify connectivity with the AWS IoT platform. But it can also receive and process job 
+jobs-example.js, like the [echo-example.js](#echoExample) can receive messages via the [AWS IoT Console](https://console.aws.amazon.com/iot)
+to verify connectivity with the AWS IoT platform. But it can also receive and process job
 executions initiated through the AWS IoT device jobs management platform. See the AWS IoT
 Jobs documentation [here](https://aws.amazon.com/documentation/iot/) for more information on creating and deploying jobs.
 
@@ -1078,8 +1081,8 @@ node examples/jobs-example.js -f ~/certs -H <PREFIX>.iot.<REGION>.amazonaws.com 
 
 <a name="jobsAgent"></a>
 ### jobs-agent.js
-jobs-agent.js can be run on a device as-is or it can be modified to suit specific use cases. 
-Example job documents are provided below. For more information see the AWS IoT connected device 
+jobs-agent.js can be run on a device as-is or it can be modified to suit specific use cases.
+Example job documents are provided below. For more information see the AWS IoT connected device
 management documentation [here](https://aws.amazon.com/documentation/iot/).
 #### _Running the jobs-agent_
 ```sh
@@ -1087,7 +1090,7 @@ node examples/jobs-agent.js -f ~/certs -H <PREFIX>.iot.<REGION>.amazonaws.com -T
 ```
 #### _Using the jobs-agent_
 ##### systemStatus operation
-The jobs-agent will respond to the AWS IoT jobs management platform with system status 
+The jobs-agent will respond to the AWS IoT jobs management platform with system status
 information when it receives a job execution notification with a job document that looks like this:
 ```
  {
@@ -1096,10 +1099,10 @@ information when it receives a job execution notification with a job document th
 ```
 ##### reboot operation
 When the jobs-agent receives a reboot job document it will attempt to reboot the device it is
-running on while sending updates on its progress to the AWS IoT jobs management platform.  
+running on while sending updates on its progress to the AWS IoT jobs management platform.
 After the reboot the job execution status will be marked as IN_PROGRESS until the jobs-agent
 is also restarted at which point the status will be updated to SUCCESS. To avoid manual steps
-during reboot it is suggested that device be configured to automatically start the jobs-agent 
+during reboot it is suggested that device be configured to automatically start the jobs-agent
 at device startup time. Job document format:
 ```
  {
@@ -1201,7 +1204,7 @@ npm install -g browserify
 
 #### Browser Application Utility
 This SDK includes a utility script called `scripts/browserize.sh`.  This script can create a browser bundle containing both the [AWS SDK for JavaScript](https://aws.amazon.com/sdk-for-browser/) and this SDK, or you can use it to create application bundles for browser applications,   like the ones under the `examples/browser` directory.  For Windows user who does not want to use bash shell, the SDK also includes batch file `windows-browserize.bat` which does the same job as `browserize.sh` but able to run in Windows CMD. To create the combined AWS SDK browser    bundle, run this command in the SDK's top-level directory:
-  
+
 ```sh
 npm run-script browserize
 ```
@@ -1231,8 +1234,8 @@ This command does two things.  First, it creates an application bundle from `exa
 #### Temperature Monitor Browser Example Application
 This SDK includes a companion browser application to the [Temperature Control Example Application](#temp-control).  The browser application allows you to monitor the status of the simulated temperature control device.
 
-1. Follow the instructions to install the [Temperature Control Example Application](#temp-control) 
-  
+1. Follow the instructions to install the [Temperature Control Example Application](#temp-control)
+
 1. In order for the browser application to be able to authenticate and connect to AWS IoT, you'll need to configure a Cognito Identity Pool.  In the [Amazon Cognito console](https://console.aws.amazon.com/cognito/), use Amazon Cognito to create a new identity pool, and allow unauthenticated identities to connect.  Obtain the `PoolID` constant. Make sure that the policy attached to the [unauthenticated role](https://console.aws.amazon.com/iam/home?#roles) has permissions to access the required AWS IoT APIs.  More information about AWS IAM roles and policies can be found [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html).
 
 1. Edit `examples/browser/temperature-monitor/aws-configuration.js`, and replace the values of `poolId` and `region` with strings containing the ID of the Cognito Identity Pool and your AWS region (e.g., `'us-east-1'`) from the previous step.
@@ -1241,7 +1244,7 @@ This SDK includes a companion browser application to the [Temperature Control Ex
 
     ```sh
     npm run-script browserize examples/browser/temperature-monitor/index.js
-    ``` 
+    ```
 1. Start an instance of the device simulation using:
 
     ```sh
@@ -1262,8 +1265,8 @@ This SDK includes a browser application which demonstrates the functionality of 
 
     ```sh
     npm run-script browserize examples/browser/lifecycle/index.js
-    ``` 
-  
+    ```
+
 1. Open `examples/browser/lifecycle/index.html` in your web browser.  After connecting to AWS IoT, it should display 'connected clients'.
 1. Start programs which connect to AWS IoT (e.g., [the example programs in this package](#programs)).  Make sure that these programs are connecting to the same AWS region that your Cognito Identity Pool was created in.  The browser application will display a green box containing the client ID of each client which connects; when the client disconnects, the box will disappear.
 1. If a DynamoDB table named `LifecycleEvents` exists in your account and has a primary key named `clientId`, the lifecycle event browser monitor browser application will display the client ID contained in each row.  By updating this table using an [AWS IoT rule](http://docs.aws.amazon.com/iot/latest/developerguide/iot-rules.html) triggered by [lifecycle events](http://docs.aws.amazon.com/iot/latest/developerguide/life-cycle-events.html), you can maintain a persistent list of all of the currently connected clients within your account.
@@ -1279,8 +1282,8 @@ This SDK includes a browser application which implements a simple interactive MQ
 
     ```sh
     npm run-script browserize examples/browser/mqtt-explorer/index.js
-    ``` 
-    
+    ```
+
 1. Open `examples/browser/mqtt-explorer/index.html` in your web browser.  After connecting to AWS IoT, it should display input fields allowing you to subscribe or publish to a topic.  By subscribing to '#', for example, you will be able to monitor all traffic within your AWS account as allowed by the policy associated with the unauthenticated role of your Cognito Identity Pool.
 
 #### Reducing Browser Bundle Size
@@ -1289,10 +1292,10 @@ After your application development is complete, you will probably want to reduce
 ##### Eliminate unused features from the AWS SDK
 
 1. The [AWS SDK for JavaScript](https://github.com/aws/aws-sdk-js) allows you to install only the features you use in your application.  In order to use this feature when preparing a browser bundle, first you'll need to remove any existing bundle that you've already created:
-  
+
     ```sh
     rm browser/aws-iot-sdk-browser-bundle.js
-    ``` 
+    ```
 
 2. Define the AWS features your application uses as a comma-separated list in the `AWS_SERVICES` environment variable.  For example, the [MQTT Explorer example](#mqtt-explorer-browser-example) uses only AWS Cognito Identity, so to create a bundle containing only this feature, do:
 
@@ -1300,17 +1303,17 @@ After your application development is complete, you will probably want to reduce
     export AWS_SERVICES=cognitoidentity
     ```
     For a list of the AWS SDK feature names, refer to the [_features subdirectory_ of the AWS SDK for JavaScript](https://github.com/aws/aws-sdk-js/tree/master/features).  As another example, if your application uses Cognito Identity, DynamoDB, S3, and SQS, you would do:
-  
+
     ```sh
     export AWS_SERVICES=cognitoidentity,dynamodb,s3,sqs
-    ``` 
-  
+    ```
+
 3. Create the browser app and bundle, e.g. for the [MQTT Explorer example](#mqtt-explorer-browser-example), do:
 
     ```sh
     npm run-script browserize examples/browser/mqtt-explorer/index.js
     ```
-  
+
 #### Uglify the bundle source
 
 [Uglify](https://www.npmjs.com/package/uglify) is an npm utility for minimizing the size of JavaScript source files.  To use it, first install it as a global npm package:
@@ -1342,15 +1345,15 @@ cd ./examples/browser/mqtt-webpack
 npm install
 ./node_modules/.bin/webpack --config webpack.config.js
 ```
-The `index.html` will load the output file `bundle.js` and execute functions defined in `entry.js`. This duplicates the example of mqtt-explore above which loaded SDK into web browser using browserify. 
+The `index.html` will load the output file `bundle.js` and execute functions defined in `entry.js`. This duplicates the example of mqtt-explore above which loaded SDK into web browser using browserify.
 
 ## Troubleshooting
 
 If you have problems connecting to the AWS IoT Platform when using this SDK or
 running the example programs, there are a few things to check:
 
-* _Region Mismatch_:  You have to use the certificate created in the same 
-region as your host end point. 
+* _Region Mismatch_:  You have to use the certificate created in the same
+region as your host end point.
 * _Duplicate Client IDs_:  Within your AWS account, the AWS IoT platform
 will only allow one connection per client ID.  Many of the example programs
 run as two processes which communicate with one another.  If you don't

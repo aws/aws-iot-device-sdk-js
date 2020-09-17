@@ -63,7 +63,7 @@ if [ ! -f $BROWSER_BUNDLE_DIR/aws-iot-sdk-browser-bundle.js ]; then
 # that we use this copy of the SDK files rather than pulling them from npm, so that
 # we can easily work with local changes, if necessary.
 #
-    (cd $BROWSER_BUNDLE_DIR; tar cvzf aws-iot-device-sdk.tgz --exclude ${PWD##*/} --exclude node_modules --exclude .git --exclude .coverdata --exclude debug --exclude examples --exclude reports --exclude test -C ../ .; mkdir -p node_modules/aws-iot-device-sdk; (cd node_modules/aws-iot-device-sdk; tar xvzf ../../aws-iot-device-sdk.tgz); npm install)
+    (cd $BROWSER_BUNDLE_DIR; tar cvzf aws-iot-device-sdk.tgz --exclude ${PWD##*/} --exclude node_modules --exclude .git --exclude .github --exclude .coverdata --exclude debug --exclude examples --exclude reports --exclude test -C ../ .; mkdir -p node_modules/aws-iot-device-sdk; (cd node_modules/aws-iot-device-sdk; tar xvzf ../../aws-iot-device-sdk.tgz); npm install)
 #
 # Create the browser bundle and delete all working files/directories.  Allow
 # aws-iot-device-sdk and aws-sdk to be required by other browserify bundles.

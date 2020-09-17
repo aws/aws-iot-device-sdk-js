@@ -201,7 +201,8 @@ describe( "device class unit tests", function() {
                certPath:'test/data/certificate.pem.crt', 
                caPath:'test/data/root-CA.crt',
                clientId:'dummy-client-1',
-               host:'XXXX.iot.us-east-1.amazonaws.com'
+               host:'XXXX.iot.us-east-1.amazonaws.com',
+               servername:'XXXX.iot.us-east-1.amazonaws.com'
                }  );
             }, function(err) { console.log('\t['+err+']'); return true;}
             ); 

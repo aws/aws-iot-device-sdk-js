@@ -1,10 +1,21 @@
+## [2.2.7](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.7) (Sep 15, 2020)
+
+Bugfixes/Improvements
+  - send SNI string while connecting to AWS IoT
+  - README warns about MacOS storing certificate in keychain
+
+## [2.2.6](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.6) (May 18, 2020)
+
+Bugfixes/Improvements
+  - Require only the necessary modules from crypto-js to optimize bundle
+
 ## [2.2.5](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.5) (Apr 7, 2020)
 
 Bugfixes/Improvements
   - Re-adding github related templates and readme change.
 
 ## [2.2.4](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.4) (Mar 31, 2020)
-  
+
 Bugfixes/Improvements
   - Bumping minimist version to 1.2.5 to address security issue
 
@@ -35,7 +46,7 @@ Bugfixes/Improvements
   - Modify Keepalive defaults to 300 secs to maintain consistency across SDKs
   - Expose shadow version from raw json object
   - Added samples to demonstrate AWS IoT Job API
-  - Disabled MQTT.js default resubscribe. 
+  - Disabled MQTT.js default resubscribe.
 
 ## [2.1.0](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.0.1) (Sep 28, 2017)
 
@@ -57,7 +68,7 @@ Bugfixes/Improvements
 
 API Changes
   - Deprecated region option(-g) in device configuration.
-  - Added host endpoint option(-H) to connect to custom host endpoint 
+  - Added host endpoint option(-H) to connect to custom host endpoint
 
 Features
   - Added support for browserify on Windows CMD. [#74](https://github.com/aws/aws-iot-device-sdk-js/issues/74)
@@ -66,9 +77,9 @@ Features
 
 Bugfixes/Improvements
   - Fixed README.md typo [#101](https://github.com/aws/aws-iot-device-sdk-js/issues/101)
-  - Fixed thing.register() API to have independent optional parameters.[#106](https://github.com/aws/aws-iot-device-sdk-js/issues/106) 
-  - Upgrade MQTT.js to v2.2.1 and gulp dependencies. 
-  - Fixed npm test failure in node version above 4. 
+  - Fixed thing.register() API to have independent optional parameters.[#106](https://github.com/aws/aws-iot-device-sdk-js/issues/106)
+  - Upgrade MQTT.js to v2.2.1 and gulp dependencies.
+  - Fixed npm test failure in node version above 4.
 
 ## [1.0.14](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v1.0.14) (Dec 7, 2016)
 
