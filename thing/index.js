@@ -512,61 +512,23 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
          // since we are already subscribed to all applicable sub-topics.
          //
          if (thingShadows[thingName].persistentSubscribe === false) {
-            this._handleSubscriptions(thingName, [{
+            this._handleSubscriptions(
+               thingName, 
+               [{
                   operations: [operation],
                   statii: ['accepted', 'rejected'],
-               }], 'subscribe',
+               }], 
+               'subscribe',
                function(err, failedTopics) {
                   if (!isUndefined(err) || !isUndefined(failedTopics)) {
                      console.warn('failed subscription to accepted/rejected topics');
                      return;
                   }
 
-                  //
-                  // If 'stateObject' is defined, publish it to the publish topic for this
-                  // thingName+operation.
-                  //
-                  if (!isUndefined(stateObject)) {
-                     //
-                     // Add the version # (if known and versioning is enabled) and 
-                     // 'clientToken' properties to the stateObject.
-                     //
-                     if (!isUndefined(thingShadows[thingName].version) &&
-                        thingShadows[thingName].enableVersioning) {
-                        stateObject.version = thingShadows[thingName].version;
-                     }
-                     stateObject.clientToken = clientToken;
-
-                     device.publish(publishTopic,
-                        JSON.stringify(stateObject), {
-                           qos: thingShadows[thingName].qos
-                        });
-                     if (!(isUndefined(thingShadows[thingName])) &&
-                        thingShadows[thingName].debug === true) {
-                        console.log('publishing \'' + JSON.stringify(stateObject) +
-                           ' on \'' + publishTopic + '\'');
-                     }
-                  }
+                  this._publishState(thingName, publishTopic, stateObject, clientToken)
                });
          } else {
-            //
-            // Add the version # (if known and versioning is enabled) and 
-            // 'clientToken' properties to the stateObject.
-            //
-            if (!isUndefined(thingShadows[thingName].version) &&
-               thingShadows[thingName].enableVersioning) {
-               stateObject.version = thingShadows[thingName].version;
-            }
-            stateObject.clientToken = clientToken;
-
-            device.publish(publishTopic,
-               JSON.stringify(stateObject), {
-                  qos: thingShadows[thingName].qos
-               });
-            if (thingShadows[thingName].debug === true) {
-               console.log('publishing \'' + JSON.stringify(stateObject) +
-                  ' on \'' + publishTopic + '\'');
-            }
+            this._publishState(thingName, publishTopic, stateObject, clientToken)
          }
 
          rc = clientToken; // return the clientToken to the caller
@@ -578,6 +540,32 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
       }
       return rc;
    };
+
+   this._publishState = function(thingName, topic, stateObject, clientToken) {
+      if (!thingShadows[thingName] || !stateObject) {
+         return
+      }
+
+      //
+      // Add the version # (if known and versioning is enabled) and 
+      // 'clientToken' properties to the stateObject.
+      //
+      if (!isUndefined(thingShadows[thingName].version) && thingShadows[thingName].enableVersioning) {
+         stateObject.version = thingShadows[thingName].version;
+      }
+      
+      stateObject.clientToken = clientToken;
+
+      device.publish(
+         topic,
+         JSON.stringify(stateObject), 
+         { qos: thingShadows[thingName].qos }
+      );
+
+      if (thingShadows[thingName].debug === true) {
+         console.log(`publishing '${JSON.stringify(stateObject)}' state on '${topic}' topic`);
+      }
+   }
 
    this.register = function(thingName, options, callback) {
 
