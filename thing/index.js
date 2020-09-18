@@ -441,115 +441,112 @@ function ThingShadowsClient(deviceOptions, thingShadowOptions) {
    });
 
    this._thingOperation = function(thingName, operation, stateObject) {
-      var rc = null;
-
-      if (thingShadows.hasOwnProperty(thingName)) {
-         if (thingShadows[thingName].subscribed === false) {
-            if (deviceOptions.debug === true) {
-               console.error(`thing '${thingName}' has not been subscribed to required topics`);
-            }
-
-            return;
-         }
-
-         if (operation === 'get' && !thingShadows[thingName].allowParallelGet && this._hasActiveOperation(thingName, operation)) {
-            if (deviceOptions.debug === true) {
-               console.warn(`there is already active 'get' operation for thing '${thingName}'; parallel 'get' operations are not allowed`);
-            }
-
-            return;
-         }
-
-         //
-         // If not provided, construct a clientToken from the clientId and a rolling 
-         // operation count.  The clientToken is transmitted in any published stateObject 
-         // and is returned to the caller for each operation.  Applications can use
-         // clientToken values to correlate received responses or timeouts with
-         // the original operations.
-         //
-         var clientToken;
-
-         if (isUndefined(stateObject.clientToken)) {
-            //
-            // AWS IoT restricts client tokens to 64 bytes, so use only the last 48
-            // characters of the client ID when constructing a client token.
-            //
-            var clientId = deviceOptions.clientId
-            clientToken = (clientId.length > 48 ? clientId.substr(clientId.length - 48) : clientId) + '-' + (operationCount++);
-         } else {
-            clientToken = stateObject.clientToken;
-         }
-
-         var publishTopic = buildThingShadowTopic(thingName, operation);
-         
-         //
-         // Subscribe to the 'accepted' and 'rejected' sub-topics for this get
-         // operation and set a timeout beyond which they will be unsubscribed if 
-         // no messages have been received for either of them.
-         //
-         var timeoutId = setTimeout(
-            function(thingName, clientToken) {
-               //
-               // Timed-out.  Unsubscribe from the 'accepted' and 'rejected' sub-topics unless
-               // we are persistently subscribing to this thing shadow.
-               //
-               if (thingShadows[thingName].persistentSubscribe === false) {
-                  that._handleSubscriptions(thingName, [{
-                     operations: [operation],
-                     statii: ['accepted', 'rejected']
-                  }], 'unsubscribe');
-               }
-
-               //
-               // Mark the current operation as complete.
-               //
-               this._deleteActiveOperationByToken(thingName, clientToken, /* withTimeout: */ false)
-
-               //
-               // Emit an event for the timeout; the clientToken is included as an argument
-               // so that the application can correlate timeout events to the operations
-               // they are associated with.
-               //
-               that.emit('timeout', thingName, clientToken);
-            }, 
-            operationTimeout, 
-            thingName, 
-            clientToken,
-         );
-
-         //
-         // Subscribe to the 'accepted' and 'rejected' sub-topics unless we are
-         // persistently subscribing, in which case we can publish to the topic immediately
-         // since we are already subscribed to all applicable sub-topics.
-         //
-         if (thingShadows[thingName].persistentSubscribe === false) {
-            this._handleSubscriptions(
-               thingName, 
-               [{
-                  operations: [operation],
-                  statii: ['accepted', 'rejected'],
-               }], 
-               'subscribe',
-               function(err, failedTopics) {
-                  if (!isUndefined(err) || !isUndefined(failedTopics)) {
-                     console.warn('failed subscription to accepted/rejected topics');
-                     return;
-                  }
-
-                  this._publishState(thingName, publishTopic, stateObject, clientToken)
-               });
-         } else {
-            this._publishState(thingName, publishTopic, stateObject, clientToken)
-         }
-
-         rc = clientToken; // return the clientToken to the caller
-         this._addActiveOperation(thingName, operation, clientToken, timeoutId);
-      } else {
+      if (!thingShadows.hasOwnProperty(thingName)) {
          if (deviceOptions.debug === true) {
             console.error('attempting to ' + operation + ' unknown thing: ', thingName);
          }
+         return null
       }
-      return rc;
+
+      if (thingShadows[thingName].subscribed === false) {
+         if (deviceOptions.debug === true) {
+            console.error(`thing '${thingName}' has not been subscribed to required topics`);
+         }
+         return null;
+      }
+
+      if (operation === 'get' && !thingShadows[thingName].allowParallelGet && this._hasActiveOperation(thingName, operation)) {
+         if (deviceOptions.debug === true) {
+            console.warn(`there is already active 'get' operation for thing '${thingName}'; parallel 'get' operations are not allowed`);
+         }
+         return null;
+      }
+
+      //
+      // If not provided, construct a clientToken from the clientId and a rolling 
+      // operation count.  The clientToken is transmitted in any published stateObject 
+      // and is returned to the caller for each operation.  Applications can use
+      // clientToken values to correlate received responses or timeouts with
+      // the original operations.
+      //
+      var clientToken;
+
+      if (isUndefined(stateObject.clientToken)) {
+         //
+         // AWS IoT restricts client tokens to 64 bytes, so use only the last 48
+         // characters of the client ID when constructing a client token.
+         //
+         var clientId = deviceOptions.clientId
+         clientToken = (clientId.length > 48 ? clientId.substr(clientId.length - 48) : clientId) + '-' + (operationCount++);
+      } else {
+         clientToken = stateObject.clientToken;
+      }
+
+      var publishTopic = buildThingShadowTopic(thingName, operation);
+      
+      //
+      // Subscribe to the 'accepted' and 'rejected' sub-topics for this get
+      // operation and set a timeout beyond which they will be unsubscribed if 
+      // no messages have been received for either of them.
+      //
+      var timeoutId = setTimeout(
+         function(thingName, clientToken) {
+            //
+            // Timed-out.  Unsubscribe from the 'accepted' and 'rejected' sub-topics unless
+            // we are persistently subscribing to this thing shadow.
+            //
+            if (thingShadows[thingName].persistentSubscribe === false) {
+               that._handleSubscriptions(thingName, [{
+                  operations: [operation],
+                  statii: ['accepted', 'rejected']
+               }], 'unsubscribe');
+            }
+
+            //
+            // Mark the current operation as complete.
+            //
+            this._deleteActiveOperationByToken(thingName, clientToken, /* withTimeout: */ false)
+
+            //
+            // Emit an event for the timeout; the clientToken is included as an argument
+            // so that the application can correlate timeout events to the operations
+            // they are associated with.
+            //
+            that.emit('timeout', thingName, clientToken);
+         }, 
+         operationTimeout, 
+         thingName, 
+         clientToken,
+      );
+
+      //
+      // Subscribe to the 'accepted' and 'rejected' sub-topics unless we are
+      // persistently subscribing, in which case we can publish to the topic immediately
+      // since we are already subscribed to all applicable sub-topics.
+      //
+      if (thingShadows[thingName].persistentSubscribe === false) {
+         this._handleSubscriptions(
+            thingName, 
+            [{
+               operations: [operation],
+               statii: ['accepted', 'rejected'],
+            }], 
+            'subscribe',
+            function(err, failedTopics) {
+               if (!isUndefined(err) || !isUndefined(failedTopics)) {
+                  console.warn('failed subscription to accepted/rejected topics');
+                  return;
+               }
+
+               this._publishState(thingName, publishTopic, stateObject, clientToken)
+            });
+      } else {
+         this._publishState(thingName, publishTopic, stateObject, clientToken)
+      }
+
+      this._addActiveOperation(thingName, operation, clientToken, timeoutId);
+      
+      return clientToken;
    };
 
    this._publishState = function(thingName, topic, stateObject, clientToken) {
