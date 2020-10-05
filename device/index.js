@@ -482,28 +482,21 @@ function DeviceClient(options) {
          }
          if (isUndefined(awsAccessId) || isUndefined(awsSecretKey)) {
             var filename;
+            var user_profile = options.profile || process.env.AWS_PROFILE || 'default';
             try {
                if (!isUndefined(options.filename)) {
                   filename = options.filename;
                } else {
                   filename = _loadDefaultFilename();
                }
-               var user_profile = options.profile || process.env.AWS_PROFILE || 'default';
                var creds = getCredentials(fs.readFileSync(filename, 'utf-8'));
-
-                if (!creds[user_profile]) {
-                    console.log("WS Access Key ID and AWS Secret Key not found in file:" + options.filename + " for AWS_PROFILE:" + process.env.AWS_PROFILE);
-                    throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
-                }
-
-
                var profile = creds[user_profile];
                awsAccessId = profile.aws_access_key_id;
                awsSecretKey = profile.aws_secret_access_key;
                awsSTSToken = profile.aws_session_token;
             } catch (e) {
                console.log(e);
-               console.log('Failed to read credentials from ' + filename);
+               console.log('Failed to read credentials for AWS_PROFILE ' + user_profile + ' from ' + filename);
             }
          }
          // AWS Access Key ID and AWS Secret Key must be defined
