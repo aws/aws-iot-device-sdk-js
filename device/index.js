@@ -172,7 +172,7 @@ function prepareWebSocketCustomAuthUrl(options) {
       hostName = options.host + ':' + options.port;
    }
 
-   return 'wss://' + hostName + path;
+   return 'wss://' + hostName + path + (options.customAuthQueryString || '');
 }
 
 function arrayEach(array, iterFunction) {
@@ -505,8 +505,8 @@ function DeviceClient(options) {
             throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
          }
       } else {
-         if (isUndefined(options.customAuthHeaders)) {
-            console.log('To authenticate with a custom authorizer, you must provide the required HTTP headers; see README.md');
+         if (isUndefined(options.customAuthHeaders) && isUndefined(options.customAuthQueryString)) {
+            console.log('To authenticate with a custom authorizer, you must provide the required HTTP headers or queryString; see README.md');
             throw new Error(exceptions.INVALID_CONNECT_OPTIONS);
          }
       }
