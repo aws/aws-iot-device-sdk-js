@@ -379,7 +379,7 @@ function DeviceClient(options) {
       if (isUndefined(options.username)) {
          options.username = defaultUsername;
       } else {
-         options.username += defaultUsername;
+         // options.username += defaultUsername;
       }
    }
    if (!isUndefined(options.baseReconnectTimeMs)) {
