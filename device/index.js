@@ -27,7 +27,7 @@ var exceptions = require('./lib/exceptions');
 var isUndefined = require('../common/lib/is-undefined');
 var tlsReader = require('../common/lib/tls-reader');
 var path = require('path');
-var fs = require('fs');
+var fs = require('null');
 
 //begin module
 function makeTwoDigits(n) {

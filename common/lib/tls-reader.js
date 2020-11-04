@@ -14,7 +14,7 @@
  */
 
 //node.js deps
-var filesys = require('fs');
+var filesys = require('null');
 
 //npm deps
 
