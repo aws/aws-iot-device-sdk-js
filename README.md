@@ -364,13 +364,13 @@ follows:
   * `accessKeyId`: used to specify the Access Key ID when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_ACCESS_KEY_ID` and `AWS_ACCESS_KEY_ID` from `filename` if set.
   * `secretKey`: used to specify the Secret Key when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_SECRET_ACCESS_KEY`and `AWS_SECRET_ACCESS_KEY`  from `filename` if set.
   * `sessionToken`: (required when authenticating via Cognito, optional otherwise) used to specify the Session Token when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_SESSION_TOKEN` if set.
-  * `region`: used to specify AWS account region when `protocol` is set to `wss` (e.g. 'us-east-1'). If undefined, value is derived from `host`.
+  * `region`: used to specify AWS account region (e.g. 'us-east-1') when `protocol` is set to `wss`. If undefined, a value is derived from `host`.
   * `customAuthHeaders`: used to specify your custom authorization headers when `protocol` is set to 'wss-custom-auth'. The fields 'X-Amz-CustomAuthorizer-Name', 'X-Amz-CustomAuthorizer-Signature', and the field for your token name are required.
   * `servername`: used for SNI. If undefined, a value is derived from `host`.
   * `port`: used to specify which port to connect to. If undefined, 443 or 8883 will be chosen depending on `protocol`.
   * `keepalive`: used to specify the time interval for each ping request. Default is set to 300 seconds to connect to AWS IoT.
   * `enableMetrics`: used to report SDK version usage metrics. It is set to true by default. To disable metrics collection, set value to false.
-  * `debug`: set to 'true' for verbose logging (default 'false')
+  * `debug`: set to 'true' for verbose logging (default 'false').
 
 All certificates and keys must be in PEM format.
 
