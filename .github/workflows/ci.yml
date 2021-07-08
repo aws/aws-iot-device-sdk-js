@@ -10,23 +10,22 @@ env:
   RUN: ${{ github.run_id }}-${{ github.run_number }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PACKAGE_NAME: aws-iot-device-sdk-js
 
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x]
 
     steps:
-        # We can't use the `uses: docker://image` version yet, GitHub lacks authentication for actions -> packages
-    - name: Build ${{ env.PACKAGE_NAME }}
-      run: |
-        which node
-        which npm
-        pwd
-        cd ${{ github.workspace }}
-        pwd
-        npm install
-        npm test
-
-
+      - uses: actions/checkout@v2
+      - name: Unit Tests - Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
