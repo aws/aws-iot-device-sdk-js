@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!main'
+
+env:
+  RUN: ${{ github.run_id }}-${{ github.run_number }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - al2012-x64
+          - al2-x64
+    steps:
+        # We can't use the `uses: docker://image` version yet, GitHub lacks authentication for actions -> packages
+    - name: Build ${{ env.PACKAGE_NAME }}
+      run: |
+        which node
+        which npm
+        ls
+
