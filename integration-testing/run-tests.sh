@@ -137,7 +137,7 @@ echo "###################################################################"
 echo ${0##*/}": retrieving AWS credentials from AWS SecretsManager"
 echo "###################################################################"
 # fetch secret value and strip quotes with sed
-principal=$(aws secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketAccessKeyId --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
+principal=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketAccessKeyId --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
 if [ $? == "0" ]
 then
     echo ${0##*/}": retrieved ws testing access key id"
@@ -147,7 +147,7 @@ else
 fi
 
 # fetch secret value and strip quotes with sed
-credential=$(aws secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketSecretAccessKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
+credential=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketSecretAccessKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
 if [ $? == "0" ]
 then
     echo ${0##*/}": retrieved ws testing secret access key"
@@ -177,7 +177,7 @@ case $AUTHENTICATION_TYPE"" in
        echo "###################################################################"
 
        # fetch secret value, strip quotes and replace "\n" with an actual newline
-       aws secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestCertificate --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
+       aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestCertificate --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
 /g' > $CERT_DIR/certificate.pem.crt
        if [ $? == "0" ]
        then
@@ -188,7 +188,7 @@ case $AUTHENTICATION_TYPE"" in
        fi
 
        # fetch secret value, strip quotes and replace "\n" with an actual newline
-       aws secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestPrivateKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
+       aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestPrivateKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
 /g' > $CERT_DIR/private.pem.key
        if [ $? == "0" ]
        then
