@@ -23,5 +23,7 @@ jobs:
       run: |
         which node
         which npm
-        ls
+        npm install
+        npm test
+
 
