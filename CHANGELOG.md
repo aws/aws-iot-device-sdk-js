@@ -1,3 +1,10 @@
+## [2.2.9](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.9) (July 8, 2021)
+
+Bugfixes/Improvements
+  - Updated crypto-js version
+  - Updated mqtt-js version
+  - Removed reserved topic checks from subscribe calls
+
 ## [2.2.8](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.8) (May 20, 2021)
 
 Bugfixes/Improvements

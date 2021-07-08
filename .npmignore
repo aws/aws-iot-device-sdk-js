@@ -1,0 +1,13 @@
+examples
+node_modules
+debug
+.coverdata
+.coverrun
+.git
+.github
+continuous-delivery
+integration-testing
+test
+reports
+.npmrc
+.idea
