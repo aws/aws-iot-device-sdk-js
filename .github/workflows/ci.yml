@@ -23,6 +23,9 @@ jobs:
       run: |
         which node
         which npm
+        pwd
+        cd ${{ github.workspace }}
+        pwd
         npm install
         npm test
 
