@@ -404,6 +404,7 @@ describe( "device class unit tests", function() {
 
          delete process.env.AWS_ACCESS_KEY_ID;
          delete process.env.AWS_SECRET_ACCESS_KEY;
+         delete process.env.AWS_PROFILE;
 
          assert.doesNotThrow( function( err ) { 
             var device = deviceModule( {
