@@ -1,3 +1,10 @@
+## [2.2.10](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.10) (July 9 2021)
+
+Bugfixes/Improvements
+  - Merged support for custom auth connections via query parameters
+  - Bound/propagated the mqtt-js 'end' event
+  - Unit test reliability and wording updates
+  
 ## [2.2.9](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.9) (July 8, 2021)
 
 Bugfixes/Improvements
