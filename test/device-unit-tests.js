@@ -546,12 +546,36 @@ describe( "device class unit tests", function() {
          );
       });
    });
-   describe("device throws exception if using CustomAuth over websocket without headers", function () {
+   describe("device throws exception if using CustomAuth over websocket without headers or querystring", function () {
       it("throws exception", function () {
          assert.throws(function (err) {
             var device = deviceModule({
                host: 'XXXX.iot.us-east-1.amazonaws.com',
                protocol: 'wss-custom-auth'
+            });
+         }, function (err) { console.log('\t[' + err + ']'); return true; }
+         );
+      });
+   });
+   describe("device does not throw exception if using CustomAuth over websocket with headers", function () {
+      it("does not throw an exception", function () {
+         assert.doesNotThrow(function (err) {
+            var device = deviceModule({
+               host: 'XXXX.iot.us-east-1.amazonaws.com',
+               protocol: 'wss-custom-auth',
+               customAuthHeaders: {}
+            });
+         }, function (err) { console.log('\t[' + err + ']'); return true; }
+         );
+      });
+   });
+   describe("device does not throw exception if using CustomAuth over websocket with querystring", function () {
+      it("does not throw an exception", function () {
+         assert.doesNotThrow(function (err) {
+            var device = deviceModule({
+               host: 'XXXX.iot.us-east-1.amazonaws.com',
+               protocol: 'wss-custom-auth',
+               customAuthQueryString: ''
             });
          }, function (err) { console.log('\t[' + err + ']'); return true; }
          );
@@ -1887,6 +1911,15 @@ describe( "device class unit tests", function() {
          var url = deviceModule.prepareWebSocketCustomAuthUrl( { host:'not-a-real-host.com' } );
          assert.equal( url, expectedUrl );
       });
+   });
+   describe("websocket http querystring is correctly set when CustomAuth querystring is specified", function() {
+      it("generates the correct url", function() {
+         const queryString = '?X-Amz-CustomAuthorizer-Name=AuthorizerFunctionName&X-Amz-CustomAuthorizer-Signature=Signature&NPAuthorizerToken=Token';
+         const expectedUrl = 'wss://not-a-real-host.com/mqtt' + queryString;
+         const url = deviceModule.prepareWebSocketCustomAuthUrl( { host:'not-a-real-host.com', customAuthQueryString: queryString } );
+         assert.equal( url, expectedUrl );
+      });
+      
    });
    describe("websocket headers are correctly set when CustomAuth headers are specified", function() {
       it("sets the websocket headers correctly", function() {

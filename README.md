@@ -368,6 +368,7 @@ follows:
   * `customAuthHeaders`: used to specify your custom authorization headers when `protocol` is set to 'wss-custom-auth'. The fields 'X-Amz-CustomAuthorizer-Name', 'X-Amz-CustomAuthorizer-Signature', and the field for your token name are required.
   * `servername`: used for SNI. If undefined, a value is derived from `host`.
   * `port`: used to specify which port to connect to. If undefined, 443 or 8883 will be chosen depending on `protocol`.
+  * `customAuthQueryString`: used to specify the token credentials in a query string for custom authorization when `protocol` is set to `wss-custom-auth`. More info can be found [here](https://docs.aws.amazon.com/iot/latest/developerguide/custom-auth.html#custom-auth-websockets).
   * `keepalive`: used to specify the time interval for each ping request. Default is set to 300 seconds to connect to AWS IoT.
   * `enableMetrics`: used to report SDK version usage metrics. It is set to true by default. To disable metrics collection, set value to false.
   * `debug`: set to 'true' for verbose logging (default 'false').
@@ -746,8 +747,8 @@ set the `protocol` option to `wss-custom-auth`.
 ### Custom Authorization Configuration
 
 To use custom authorization, you must first set up an authorizer function in Lambda and register it
-with IoT. Once you do, you will be able to authenticate using this function. To use custom auth,
-set the `customAuthHeaders` option to your headers object when instantiating the [awsIotDevice()](#device)
+with IoT. Once you do, you will be able to authenticate using this function. There are two ways to use custom auth:
+* set the `customAuthHeaders` option to your headers object when instantiating the [awsIotDevice()](#device)
 or [awsIot.thingShadow()](#thingShadow) classes. The headers object is an object containing the header name
 and values as key-value pairs:
 
@@ -757,6 +758,11 @@ and values as key-value pairs:
         'X-Amz-CustomAuthorizer-Signature': 'signature',
         'TestAuthorizerToken': 'token'
     }
+```
+* set the `customAuthQueryString` option to your headers object when instantiating the [awsIotDevice()](#device) class. The query string is a string containing the values as key-value pairs:
+
+```js
+    '?X-Amz-CustomAuthorizer-Name=TestAuthorizer&X-Amz-CustomAuthorizer-Signature=signature&TestAuthorizerToken=token'
 ```
 
 
