@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [10.x]
-        test-type: [websocket, certificate]
+        test-type: [websocket, certificate, custom-auth]
 
     steps:
       - uses: actions/checkout@v2

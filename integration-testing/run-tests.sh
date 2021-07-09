@@ -8,7 +8,7 @@
 #
 # PARAMETERS 
 #
-#                        <authentication-type> : [websocket|certificate]
+#                        <authentication-type> : [websocket|certificate|custom-auth]
 #
 # This program will first validate the given parameters, then attempt to
 # retrieve required secrets from AWS secrets manager; if both are successful, it
@@ -53,9 +53,10 @@ then
    export AUTHENTICATION_TYPE=$1
 
    if [ $AUTHENTICATION_TYPE"" != "websocket" ] && \
-      [ $AUTHENTICATION_TYPE"" != "certificate" ] 
+      [ $AUTHENTICATION_TYPE"" != "certificate" ] && \
+      [ $AUTHENTICATION_TYPE"" != "custom-auth" ]	  
    then
-       echo ${0##*/}": authentication-type must be one of [websocket|certificate]"
+       echo ${0##*/}": authentication-type must be one of [websocket|certificate|custom-auth]"
        exit 2
    fi
    export LONG_RUNNING_TEST="" 
@@ -166,6 +167,20 @@ case $AUTHENTICATION_TYPE"" in
        exit $?
        ;;
 
+   custom-auth)
+       echo "###################################################################"
+       echo ${0##*/}": setting custom-auth credentials"
+       echo "###################################################################"
+
+       export CUSTOM_AUTH_HEADERS="{ \"X-Amz-CustomAuthorizer-Name\": \"SDKTestAuthorizer\", \"X-Amz-CustomAuthorizer-Signature\": \"vHPdrbNsr24wR+OcR45el1xh14MtJu5zLPp5ZhoJo9mGCmWQcFj9wPhgYWmgX/900T3NFhB+c7fN8Cln7r6ZszMQP48fjFiF95FmqlXPENlEDWuLN8kCVE3BRr12fcvXDNo9gPEWYE71KkWDLTrqtuOIDFAp39zduEPhzN3bj0yn+0RCMA7X9Q3BNxJji+Rq1U68jCWTjGay9cz3P+PnxfL5zqnoeJhg7baJG+xf7b1kmDw9lMzUSXNGs6FTxO66TzOscZ6I8oOWrMUvTSe24j4POs00bROOTWc0XXoCvX/v4W+TI/Oe3jnJXfXcmOqLXLPqapgWL2XobiOnFjl0PA==\", \"SDKTestAuthorizerToken\": \"abc123\" }"
+
+       # Make sure it won't reject the internal cert used by Gamma PDX. Once we switch to prod, remove this line
+       export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+       $RUN_INTEGRATION_TESTS
+       exit $?
+       ;;
+   
    certificate)
        export JOBS_AWS_ACCESS_KEY_ID=$principal
        export JOBS_AWS_SECRET_ACCESS_KEY=$credential

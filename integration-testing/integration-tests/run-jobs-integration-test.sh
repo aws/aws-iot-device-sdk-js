@@ -60,7 +60,8 @@ then
     PROC2_PID=$!
     $NODE $INT_TEST_DIR/jobs-integration-test.js -H $HOSTNAME  -f $CERT_DIR -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
     PROC1_PID=$!
-else
+elif [ $AUTHENTICATION_TYPE"" == "websocket" ]
+then
     echo "###################################################################"
     echo ${0##*/}": running jobs integration test (websocket/sigv4)"
     echo "###################################################################"
@@ -68,6 +69,11 @@ else
     PROC2_PID=$!
     $NODE $INT_TEST_DIR/jobs-integration-test.js -H $HOSTNAME -P=wss -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
     PROC1_PID=$!
+else
+    echo "###################################################################"
+    echo ${0##*/}": skipping jobs integration test (custom_auth)"
+    echo "###################################################################"
+    exit 0
 fi
 #
 # Wait on the two partner processes and record their exit codes.
