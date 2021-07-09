@@ -807,6 +807,9 @@ function DeviceClient(options) {
 
       that.emit('reconnect');
    });
+   device.on('end', function() {
+      that.emit('end');
+   });
    device.on('offline', function() {
       that.emit('offline');
    });
