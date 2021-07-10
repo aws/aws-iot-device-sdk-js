@@ -25,7 +25,7 @@ const isUndefined = require('../common/lib/is-undefined');
 //begin module
 
 //
-// This test demonstrates the use of thing shadows along with 
+// This test demonstrates the use of thing shadows along with
 // non-thing topics.  One process updates a thing shadow and
 // subscribes to a non-thing topic; the other receives delta
 // updates on the thing shadow on publishes to the non-thing
@@ -64,10 +64,10 @@ function processTest(args) {
    var currentTimeout = null;
 
    //
-   // For convenience, use a stack to keep track of the current client 
-   // token; in this example app, this should never reach a depth of more 
+   // For convenience, use a stack to keep track of the current client
+   // token; in this example app, this should never reach a depth of more
    // than a single element, but if your application uses multiple thing
-   // shadows simultaneously, you'll need some data structure to correlate 
+   // shadows simultaneously, you'll need some data structure to correlate
    // client tokens with their respective thing shadows.
    //
    var stack = [];
@@ -77,7 +77,7 @@ function processTest(args) {
       if (clientToken === null) {
          //
          // The thing shadow operation can't be performed because another one
-         // is pending; if no other operation is pending, reschedule it after an 
+         // is pending; if no other operation is pending, reschedule it after an
          // interval which is greater than the thing shadow operation timeout.
          //
          if (currentTimeout !== null) {
@@ -123,7 +123,7 @@ function processTest(args) {
       //
       thingShadows.register(thingName, {
          ignoreDeltas: true
-      }, function(err, failedTopics){
+      }, function(err, failedTopics) {
             if (isUndefined(err) && isUndefined(failedTopics)) {
                genericOperation('update', generateState());
                thingShadows.subscribe(nonThingName);

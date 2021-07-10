@@ -360,7 +360,7 @@ function DeviceClient(options) {
    //
    // Validate options, set default reconnect period if not specified.
    //
-   var metricPrefix = "?SDK=JavaScript&Version=";
+   var metricPrefix = '?SDK=JavaScript&Version=';
    var pjson = require('../package.json');
    var sdkVersion = pjson.version;
    var defaultUsername = metricPrefix + sdkVersion;
@@ -375,7 +375,7 @@ function DeviceClient(options) {
    //
    // Metrics will be enabled by default unless the user explicitly disables it
    //
-   if (isUndefined(options.enableMetrics) || options.enableMetrics === true){
+   if (isUndefined(options.enableMetrics) || options.enableMetrics === true) {
       if (isUndefined(options.username)) {
          options.username = defaultUsername;
       } else {

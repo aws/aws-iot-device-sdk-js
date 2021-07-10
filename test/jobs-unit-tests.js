@@ -26,8 +26,8 @@ var myTls = rewire('../device/lib/tls');
 var mockTls = require('./mock/mockTls');
 var mockMQTTClient = require('./mock/mockMQTTClient');
 
-describe( "jobs class unit tests", function() {
-    var jobsModule = require('../').jobs; 
+describe( 'jobs class unit tests', function() {
+    var jobsModule = require('../').jobs;
 
     var mockMQTTClientObject;
     var fakeConnect;
@@ -47,10 +47,10 @@ describe( "jobs class unit tests", function() {
             return mockMQTTClientObject;
         };
 
-        mqttSave = sinon.stub(mqtt, 'MqttClient', fakeConnect);
+        mqttSave = sinon.stub(mqtt, 'MqttClient').callsFake(fakeConnect);
 
-        mockTlsRevert = myTls.__set__("tls", mockTlsObject);
-        mockMqttRevert = myTls.__set__("mqtt", mockMqttObject);
+        mockTlsRevert = myTls.__set__('tls', mockTlsObject);
+        mockMqttRevert = myTls.__set__('mqtt', mockMqttObject);
     });
     afterEach( function () {
         mqttSave.restore();
@@ -58,99 +58,99 @@ describe( "jobs class unit tests", function() {
         mockMqttRevert();
     });
 
-    describe("TLS handler calls the correct functions", function() {
-        it("calls the correct functions", function() {
+    describe('TLS handler calls the correct functions', function() {
+        it('calls the correct functions', function() {
             mockTlsObject.reInitCommandCalled();
             myTls(mockMqttObject, { 'testOption': true } );
             assert.equal(mockTlsObject.commandCalled['connect'], 1);
             assert.equal(mockTlsObject.commandCalled['on'], 2);
             assert.equal(mockTlsObject.commandCalled['emit'], 1);
             assert.equal(mockMqttObject.commandCalled['emit'], 1);
-        })
+        });
     });
 
     // Test cases begin
-    describe( "subscribeToJobs / unsubscribeFromJobs", function() {
-        var jobsConfig = { 
-            keyPath:'test/data/private.pem.key', 
-            certPath:'test/data/certificate.pem.crt', 
+    describe( 'subscribeToJobs / unsubscribeFromJobs', function() {
+        var jobsConfig = {
+            keyPath:'test/data/private.pem.key',
+            certPath:'test/data/certificate.pem.crt',
             caPath:'test/data/root-CA.crt',
             clientId:'dummy-client-1',
             host:'XXXX.iot.us-east-1.amazonaws.com'
         };
 
-        it("matching thing, omitted operation returns no errors", function() { 
+        it('matching thing, omitted operation returns no errors', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', function(err) { assert.equal(err, undefined); });
-        }); 
+        });
 
-        it("matching thing, matching operation returns no errors", function() { 
+        it('matching thing, matching operation returns no errors', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
-        }); 
+        });
 
-        it("no matching thing, no matching operation returns error", function() { 
+        it('no matching thing, no matching operation returns error', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
 
-        it("matching thing, no matching operation returns error", function() { 
+        it('matching thing, no matching operation returns error', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', 'testOperationName1', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName2', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
 
-        it("no matching thing, matching operation returns error", function() { 
+        it('no matching thing, matching operation returns error', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName1', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName2', 'testOperationName', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
 
-        it("duplicate returns error, omitted operation", function() { 
+        it('duplicate returns error, omitted operation', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
 
-        it("duplicate returns error", function() { 
+        it('duplicate returns error', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
 
-        it("duplicate subscribe, single unsubscribe returns no errors", function() { 
+        it('duplicate subscribe, single unsubscribe returns no errors', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
-        }); 
+        });
 
-        it("duplicate subscribe, duplicate unsubscribe returns error", function() { 
+        it('duplicate subscribe, duplicate unsubscribe returns error', function() {
             var jobs = jobsModule(jobsConfig);
 
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.subscribeToJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.equal(err, undefined); });
             jobs.unsubscribeFromJobs('testThingName', 'testOperationName', function(err) { assert.notEqual(err, undefined); });
-        }); 
+        });
     });
 
-    describe( "job execution callbacks", function() {
-        var jobsConfig = { 
-            keyPath:'test/data/private.pem.key', 
-            certPath:'test/data/certificate.pem.crt', 
+    describe( 'job execution callbacks', function() {
+        var jobsConfig = {
+            keyPath:'test/data/private.pem.key',
+            certPath:'test/data/certificate.pem.crt',
             caPath:'test/data/root-CA.crt',
             clientId:'dummy-client-1',
             host:'XXXX.iot.us-east-1.amazonaws.com'
@@ -158,15 +158,15 @@ describe( "jobs class unit tests", function() {
 
         var jobExecutionData =
         {
-            clientToken : "client-1",
+            clientToken : 'client-1',
             execution : {
-                jobId : "022",
-                status : "QUEUED",
-                jobDocument : {operation: "testOperationName", data: "value"}
+                jobId : '022',
+                status : 'QUEUED',
+                jobDocument : {operation: 'testOperationName', data: 'value'}
             }
         };
 
-        it("job subscription valid callback", function() { 
+        it('job subscription valid callback', function() {
             // Faking callback
             fakeCallback = sinon.spy();
             // Reinit mockMQTTClientObject
@@ -181,7 +181,7 @@ describe( "jobs class unit tests", function() {
             // Check spy
             assert(fakeCallback.calledTwice);
 
-        }); 
+        });
     });
 });
 

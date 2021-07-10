@@ -14,11 +14,11 @@
  */
 
 //
-// Instantiate the AWS SDK and configuration objects.  The AWS SDK for 
-// JavaScript (aws-sdk) is used for Cognito Identity/Authentication, and 
+// Instantiate the AWS SDK and configuration objects.  The AWS SDK for
+// JavaScript (aws-sdk) is used for Cognito Identity/Authentication, and
 // the AWS IoT SDK for JavaScript (aws-iot-device-sdk) is used for the
 // WebSocket connection to AWS IoT and device shadow APIs.
-// 
+//
 var AWS = require('aws-sdk');
 var AWSIoTData = require('aws-iot-device-sdk');
 var AWSConfiguration = require('./aws-configuration.js');
@@ -41,7 +41,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 var shadowsRegistered = false;
 
 //
-// Create the AWS IoT shadows object.  Note that the credentials must be 
+// Create the AWS IoT shadows object.  Note that the credentials must be
 // initialized with empty strings; when we successfully authenticate to
 // the Cognito Identity Pool, the credentials will be dynamically updated.
 //
@@ -52,7 +52,7 @@ const shadows = AWSIoTData.thingShadow({
    region: AWS.config.region,
    //
    //Set the AWS IoT Host Endpoint
-   //     
+   //
    host:AWSConfiguration.host,
    //
    // Use a random client ID.
@@ -73,7 +73,7 @@ const shadows = AWSIoTData.thingShadow({
    //
    debug: true,
    //
-   // IMPORTANT: the AWS access key ID, secret key, and sesion token must be 
+   // IMPORTANT: the AWS access key ID, secret key, and sesion token must be
    // initialized with empty strings.
    //
    accessKeyId: '',
@@ -129,7 +129,7 @@ shadows.on('status', function(name, statusType, clientToken, stateObject) {
 
 //
 // Attempt to authenticate to the Cognito Identity Pool.  Note that this
-// example only supports use of a pool which allows unauthenticated 
+// example only supports use of a pool which allows unauthenticated
 // identities.
 //
 var cognitoIdentity = new AWS.CognitoIdentity();
@@ -165,9 +165,9 @@ AWS.config.credentials.get(function(err, data) {
 //
 window.shadowConnectHandler = function() {
    console.log('connect');
-   document.getElementById("connecting-div").style.visibility = 'hidden';
-   document.getElementById("temperature-monitor-div").style.visibility = 'visible';
-   document.getElementById("temperature-control-div").style.visibility = 'visible';
+   document.getElementById('connecting-div').style.visibility = 'hidden';
+   document.getElementById('temperature-monitor-div').style.visibility = 'visible';
+   document.getElementById('temperature-control-div').style.visibility = 'visible';
 
    //
    // We only register our shadows once.
@@ -202,9 +202,9 @@ window.shadowConnectHandler = function() {
 //
 window.shadowReconnectHandler = function() {
    console.log('reconnect');
-   document.getElementById("connecting-div").style.visibility = 'visible';
-   document.getElementById("temperature-monitor-div").style.visibility = 'hidden';
-   document.getElementById("temperature-control-div").style.visibility = 'hidden';
+   document.getElementById('connecting-div').style.visibility = 'visible';
+   document.getElementById('temperature-monitor-div').style.visibility = 'hidden';
+   document.getElementById('temperature-control-div').style.visibility = 'hidden';
 };
 
 //

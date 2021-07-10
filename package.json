@@ -28,27 +28,23 @@
     "mqtt"
   ],
   "dependencies": {
-    "crypto-js": "4.0.0",
+    "crypto-js": "^4.0.0",
     "minimist": "1.2.5",
-    "mqtt": "4.2.8",
+    "mqtt": "^4.2.8",
     "websocket-stream": "^5.5.2"
   },
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-beautify": "^2.0.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-coverage": "^0.3.38",
-    "gulp-jscs": "^4.0.0",
-    "gulp-jshint": "^2.0.0",
-    "gulp-mocha": "^3.0.1",
-    "jshint": "^2.9.1",
+    "gulp": "^4.0.2",
+    "gulp-eslint": "^6.0.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-mocha": "^8.0.0",
+    "jshint": "^2.13.0",
     "jshint-stylish": "^2.2.1",
-    "rewire": "^2.5.1",
-    "sinon": "^1.17.3"
+    "rewire": "^5.0.0",
+    "sinon": "^11.1.1"
   },
   "scripts": {
     "test": "node ./node_modules/gulp/bin/gulp.js test --verbose",
-    "browserize": "./scripts/browserize.sh",
-    "beautify": "node ./node_modules/gulp/bin/gulp.js beautify"
+    "browserize": "./scripts/browserize.sh"
   }
 }

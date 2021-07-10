@@ -76,12 +76,12 @@ const maxStatusDetailLength = 64;
 //   ...
 // ]
 //
-var installedPackages = [];      
+var installedPackages = [];
 
 //
 // Track information about running state of packages
 //
-var packageRuntimes = {};  
+var packageRuntimes = {};
 
 //
 // Private function to show jobs errors
@@ -158,7 +158,7 @@ function backupFiles(job, iFile, cb) {
    if (iFile === job.document.files.length) {
       cb();
       return;
-   } 
+   }
 
    var file = job.document.files[iFile];
    if (isUndefined(file)) {
@@ -202,7 +202,7 @@ function rollbackFiles(job, iFile, cb) {
    if (iFile === job.document.files.length) {
       cb();
       return;
-   } 
+   }
 
    var file = job.document.files[iFile];
    var filePath = path.resolve(job.document.workingDirectory || '', file.fileName);
@@ -234,7 +234,7 @@ function downloadFiles(job, iFile, cb) {
    if (iFile === job.document.files.length) {
       cb();
       return;
-   } 
+   }
 
    var file = job.document.files[iFile];
    var filePath = path.resolve(job.document.workingDirectory || '', file.fileName);
@@ -270,8 +270,8 @@ function downloadFiles(job, iFile, cb) {
 // Private function to update installed package
 //
 function updateInstalledPackage(updatedPackage) {
-   var packageIndex = installedPackages.findIndex(function(element) { 
-      return (element.packageName === updatedPackage.packageName); 
+   var packageIndex = installedPackages.findIndex(function(element) {
+      return (element.packageName === updatedPackage.packageName);
    });
 
    if (packageIndex < 0) {
@@ -308,7 +308,7 @@ function stopPackage(packageName, cb) {
 
    packageRuntime.killedCallback = cb;
    packageRuntime.killTimer = setTimeout(function() {
-      packageRuntime.killedCallback = null; 
+      packageRuntime.killedCallback = null;
       packageRuntime.killTimer = null;
       cb(new Error('unable to stop package ' + packageName));
    }, killTimout * 1000);
@@ -350,7 +350,7 @@ function startPackage(package, cb) {
       return;
    }
 
-   packageRuntime.startupTimer = setTimeout(function() { 
+   packageRuntime.startupTimer = setTimeout(function() {
       packageRuntime.startupTimer = null;
       cb();
    }, startupTimout * 1000);
@@ -376,8 +376,8 @@ function startPackage(package, cb) {
 //
 function startPackageFromJob(job) {
    if (!isUndefined(job.document.packageName)) {
-      var package = installedPackages.find(function(element) { 
-         return (element.packageName === job.document.packageName); 
+      var package = installedPackages.find(function(element) {
+         return (element.packageName === job.document.packageName);
       });
 
       if (isUndefined(package)) {
@@ -385,7 +385,7 @@ function startPackageFromJob(job) {
          return;
       }
 
-      job.inProgress({ operation: job.operation, step: 'starting package, checking stability' }, function(err) { 
+      job.inProgress({ operation: job.operation, step: 'starting package, checking stability' }, function(err) {
          showJobsError(err);
          startPackage(package, function(err) {
             if (isUndefined(err)) {
@@ -406,7 +406,7 @@ function startPackageFromJob(job) {
 //
 function restartPackage(job) {
    if (!isUndefined(job.document.packageName)) {
-      job.inProgress({ operation: job.operation, step: 'stopping running package' }, function(err) { 
+      job.inProgress({ operation: job.operation, step: 'stopping running package' }, function(err) {
          showJobsError(err);
          stopPackage(job.document.packageName, function (err) {
             if (isUndefined(err)) {
@@ -443,7 +443,7 @@ function installHandler(job) {
             downloadFiles(job, function(downloadError) {
                if (isUndefined(downloadError)) {
                   if (!isUndefined(job.document.launchCommand) && job.document.autoStart) {
-                     job.inProgress({ operation: job.operation, step: 'restarting package' }, function(err) { 
+                     job.inProgress({ operation: job.operation, step: 'restarting package' }, function(err) {
                         showJobsError(err);
                         stopPackage(job.document.packageName, function (err) {
                            if (isUndefined(err)) {
@@ -454,8 +454,8 @@ function installHandler(job) {
                                  } else {
                                     rollbackFiles(job, function(rollbackError) {
                                        if (isUndefined(rollbackError)) {
-                                          var package = installedPackages.find(function(element) { 
-                                             return (element.packageName === job.document.packageName); 
+                                          var package = installedPackages.find(function(element) {
+                                             return (element.packageName === job.document.packageName);
                                           });
 
                                           if (isUndefined(package) || isUndefined(package.autoStart) || !package.autoStart) {
@@ -466,7 +466,7 @@ function installHandler(job) {
                                              });
                                           }
                                        } else {
-                                          job.failed({ operation: job.operation, errorCode: 'ERR_UNEXPECTED_PACKAGE_EXIT', 
+                                          job.failed({ operation: job.operation, errorCode: 'ERR_UNEXPECTED_PACKAGE_EXIT',
                                                        errorMessage: errorToString(err), rollbackError: errorToString(rollbackError) }, showJobsError);
                                        }
                                     });
@@ -474,7 +474,7 @@ function installHandler(job) {
                               });
                            } else {
                               rollbackFiles(job, function(rollbackError) {
-                                 job.failed({ operation: job.operation, errorCode: 'ERR_UNABLE_TO_STOP_PACKAGE', 
+                                 job.failed({ operation: job.operation, errorCode: 'ERR_UNABLE_TO_STOP_PACKAGE',
                                               errorMessage: 'unable to stop package for restart,' + (isUndefined(rollbackError) ? 'rollback successful' : 'rollback failed'),
                                               rollbackError: errorToString(rollbackError) }, showJobsError);
                               });
@@ -506,7 +506,7 @@ function installHandler(job) {
 //
 function shutdownHandler(job) {
    // Change status to IN_PROGRESS
-   job.inProgress({ operation: job.operation, step: 'attempting' }, function(err) { 
+   job.inProgress({ operation: job.operation, step: 'attempting' }, function(err) {
       showJobsError(err);
 
       var delay = (isUndefined(job.document.delay) ? '0' : job.document.delay.toString());
@@ -515,9 +515,9 @@ function shutdownHandler(job) {
       //
       // User account running node.js agent must have passwordless sudo access on /sbin/shutdown
       // Recommended online search for permissions setup instructions https://www.google.com/search?q=passwordless+sudo+access+instructions
-      exec('sudo /sbin/shutdown -k +' + delay, function (err) { 
+      exec('sudo /sbin/shutdown -k +' + delay, function (err) {
          if (!isUndefined(err)) {
-            job.failed({ operation: job.operation, errorCode: 'ERR_SYSTEM_CALL_FAILED', errorMessage: 'unable to execute shutdown, check passwordless sudo permissions on agent', 
+            job.failed({ operation: job.operation, errorCode: 'ERR_SYSTEM_CALL_FAILED', errorMessage: 'unable to execute shutdown, check passwordless sudo permissions on agent',
                          error: errorToString(err) }, showJobsError);
          } else {
             job.succeeded({ operation: job.operation, step: 'initiated' }, function (err) {
@@ -535,21 +535,21 @@ function shutdownHandler(job) {
 //
 function rebootHandler(job) {
    // Check if the reboot job has not yet been initiated
-   if (job.status.status === 'QUEUED' || 
-       isUndefined(job.status.statusDetails) || 
+   if (job.status.status === 'QUEUED' ||
+       isUndefined(job.status.statusDetails) ||
        isUndefined(job.status.statusDetails.step)) {
 
       // Change status to IN_PROGRESS
-      job.inProgress({ operation: job.operation, step: 'initiated' }, function(err) { 
+      job.inProgress({ operation: job.operation, step: 'initiated' }, function(err) {
          showJobsError(err);
 
          var delay = (isUndefined(job.document.delay) ? '0' : job.document.delay.toString());
 
          // User account running node.js agent must have passwordless sudo access on /sbin/shutdown
          // Recommended online search for permissions setup instructions https://www.google.com/search?q=passwordless+sudo+access+instructions
-         exec('sudo /sbin/shutdown -r +' + delay, function (err) { 
+         exec('sudo /sbin/shutdown -r +' + delay, function (err) {
             if (!isUndefined(err)) {
-               job.failed({ operation: job.operation, errorCode: 'ERR_SYSTEM_CALL_FAILED', errorMessage: 'unable to execute reboot, check passwordless sudo permissions on agent', 
+               job.failed({ operation: job.operation, errorCode: 'ERR_SYSTEM_CALL_FAILED', errorMessage: 'unable to execute reboot, check passwordless sudo permissions on agent',
                             error: errorToString(err) }, showJobsError);
             }
          });
@@ -560,7 +560,7 @@ function rebootHandler(job) {
       job.succeeded({ operation: job.operation, step: 'rebooted' }, showJobsError);
    } else {
       job.failed({ operation: job.operation, errorCode: 'ERR_UNEXPECTED', errorMessage: 'reboot job execution in unexpected state' }, showJobsError);
-   }   
+   }
 }
 
 
@@ -662,8 +662,8 @@ function jobsAgent(args) {
    subscribeToJobsWithRetryOnError(args.thingName, 'install', installHandler);
    subscribeToJobsWithRetryOnError(args.thingName, 'systemStatus', systemStatusHandler);
    subscribeToJobsWithRetryOnError(args.thingName, 'stop', stopPackageFromJob);
-   subscribeToJobsWithRetryOnError(args.thingName, 'start', startPackageFromJob);   
-   subscribeToJobsWithRetryOnError(args.thingName, 'restart', restartPackage);   
+   subscribeToJobsWithRetryOnError(args.thingName, 'start', startPackageFromJob);
+   subscribeToJobsWithRetryOnError(args.thingName, 'restart', restartPackage);
 
    jobs.startJobNotifications(args.thingName, function(err) {
       if (isUndefined(err)) {
@@ -685,7 +685,7 @@ function jobsAgent(args) {
    }
 
    for (var i = 0; i < installedPackages.length; i++) {
-      if (!isUndefined(installedPackages[i].launchCommand) && 
+      if (!isUndefined(installedPackages[i].launchCommand) &&
           (isUndefined(installedPackages[i].autoStart) || installedPackages[i].autoStart)) {
          startPackage(installedPackages[i], console.error);
       }

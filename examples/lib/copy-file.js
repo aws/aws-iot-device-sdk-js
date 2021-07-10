@@ -35,18 +35,18 @@ module.exports = function(fileSrc, fileDest, cb) {
    var cbCalled = false;
 
    var rd = fs.createReadStream(fileSrc);
-   rd.on("error", function(err) {
+   rd.on('error', function(err) {
       err.fileName = fileSrc;
       done(err);
    });
 
    var wr = fs.createWriteStream(fileDest);
-   wr.on("error", function(err) {
+   wr.on('error', function(err) {
       err.fileName = fileDest;
       done(err);
    });
 
-   wr.on("close", function(ex) {
+   wr.on('close', function(ex) {
       done();
    });
    rd.pipe(wr);
