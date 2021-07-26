@@ -99,6 +99,8 @@ function processTest(args) {
    device
       .on('message', function(topic, payload) {
          console.log('message', topic, payload.toString());
+         if(payload.tostring() == 'Hello from SSGMH')
+            device.publish('topic_1', 'Send Email to the Customer')
       });
 
 }
