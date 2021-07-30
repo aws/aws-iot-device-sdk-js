@@ -1,3 +1,8 @@
+## [2.2.11](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.11) (July 30 2021)
+
+Bugfixes/Improvements
+  - Added examples back into npm package
+  
 ## [2.2.10](https://github.com/aws/aws-iot-device-sdk-js/releases/tag/v2.2.10) (July 9 2021)
 
 Bugfixes/Improvements
