@@ -27,8 +27,8 @@ const isUndefined = require('../common/lib/is-undefined');
 //
 // Simulate the interaction of a mobile device and a remote thing via the
 // AWS IoT service.  The remote thing will be a dimmable color lamp, where
-// the individual RGB channels can be set to an intensity between 0 and 255.  
-// One process will simulate each side, with testMode being used to distinguish 
+// the individual RGB channels can be set to an intensity between 0 and 255.
+// One process will simulate each side, with testMode being used to distinguish
 // between the mobile app (1) and the remote thing (2).  The remote thing
 // will update its state periodically using an 'update thing shadow' operation,
 // and the mobile device will listen to delta events to receive the updated
@@ -63,10 +63,10 @@ function processTest(args) {
    var currentTimeout = null;
 
    //
-   // For convenience, use a stack to keep track of the current client 
-   // token; in this example app, this should never reach a depth of more 
+   // For convenience, use a stack to keep track of the current client
+   // token; in this example app, this should never reach a depth of more
    // than a single element, but if your application uses multiple thing
-   // shadows simultaneously, you'll need some data structure to correlate 
+   // shadows simultaneously, you'll need some data structure to correlate
    // client tokens with their respective thing shadows.
    //
    var stack = [];
@@ -77,7 +77,7 @@ function processTest(args) {
       if (clientToken === null) {
          //
          // The thing shadow operation can't be performed because another one
-         // is pending; if no other operation is pending, reschedule it after an 
+         // is pending; if no other operation is pending, reschedule it after an
          // interval which is greater than the thing shadow operation timeout.
          //
          if (currentTimeout !== null) {

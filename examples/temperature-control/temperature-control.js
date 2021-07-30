@@ -274,7 +274,7 @@ function processTest(args) {
                lcd5.setDisplay(networkStatus);
                log.log('network ' + (networkEnabled ? 'connected' : 'disconnected'));
                //
-               // Simulate a network connection/disconnection 
+               // Simulate a network connection/disconnection
                //
                if (networkEnabled) {
                   thingShadows.setConnectionStatus(true);
@@ -368,7 +368,7 @@ function processTest(args) {
    //
    // Simulate the interaction of a mobile application and a remote device via the
    // AWS IoT service.  The simulated remote device is a temperature controller.
-   // Two thing shadows are used: one for control properties (setpoint and on/off) 
+   // Two thing shadows are used: one for control properties (setpoint and on/off)
    // and the other for monitoring properties (interior/exterior temperature, current
    // state).
    //

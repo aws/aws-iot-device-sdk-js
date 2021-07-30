@@ -72,16 +72,16 @@ function processTest(args) {
 
    jobs.subscribe('testTopic');
 
-   if (args.thingName) {   
-      jobs.subscribeToJobs(args.thingName, 'customJob', function(err, job) { 
+   if (args.thingName) {
+      jobs.subscribeToJobs(args.thingName, 'customJob', function(err, job) {
          if (isUndefined(err)) {
             console.log('customJob operation handler invoked, jobId: ' + job.id.toString());
 
-            // 
-            // Indicate to AWS IoT Jobs manager that the job execution is in progress of being processed 
             //
-            job.inProgress({ operation: 'customJob', step: 'step 1 of customJob' }, function(err) { 
-               // 
+            // Indicate to AWS IoT Jobs manager that the job execution is in progress of being processed
+            //
+            job.inProgress({ operation: 'customJob', step: 'step 1 of customJob' }, function(err) {
+               //
                // Do some work...
                //
 
@@ -96,9 +96,9 @@ function processTest(args) {
          }
       });
 
-      jobs.subscribeToJobs(args.thingName, function(err, job) { 
+      jobs.subscribeToJobs(args.thingName, function(err, job) {
          if (isUndefined(err)) {
-            console.log('default job handler invoked, jobId: ' + job.id.toString()); 
+            console.log('default job handler invoked, jobId: ' + job.id.toString());
 
             //
             // Indicate to AWS IoT Jobs manager that the job execution failed

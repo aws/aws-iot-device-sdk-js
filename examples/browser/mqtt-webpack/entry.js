@@ -29,7 +29,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 });
 
 //
-// Create the AWS IoT device object.  Note that the credentials must be 
+// Create the AWS IoT device object.  Note that the credentials must be
 // initialized with empty strings; when we successfully authenticate to
 // the Cognito Identity Pool, the credentials will be dynamically updated.
 //
@@ -58,7 +58,7 @@ const mqttClient = AWSIoTData.device({
    //
    debug: true,
    //
-   // IMPORTANT: the AWS access key ID, secret key, and sesion token must be 
+   // IMPORTANT: the AWS access key ID, secret key, and sesion token must be
    // initialized with empty strings.
    //
    accessKeyId: '',
@@ -68,7 +68,7 @@ const mqttClient = AWSIoTData.device({
 
 //
 // Attempt to authenticate to the Cognito Identity Pool.  Note that this
-// example only supports use of a pool which allows unauthenticated 
+// example only supports use of a pool which allows unauthenticated
 // identities.
 //
 var cognitoIdentity = new AWS.CognitoIdentity();
@@ -104,8 +104,8 @@ AWS.config.credentials.get(function(err, data) {
 //
 window.mqttClientConnectHandler = function() {
    console.log('connect');
-   document.getElementById("connecting-div").style.visibility = 'hidden';
-   document.getElementById("explorer-div").style.visibility = 'visible';
+   document.getElementById('connecting-div').style.visibility = 'hidden';
+   document.getElementById('explorer-div').style.visibility = 'visible';
    document.getElementById('subscribe-div').innerHTML = '<p><br></p>';
    messageHistory = '';
 
@@ -120,8 +120,8 @@ window.mqttClientConnectHandler = function() {
 //
 window.mqttClientReconnectHandler = function() {
    console.log('reconnect');
-   document.getElementById("connecting-div").style.visibility = 'visible';
-   document.getElementById("explorer-div").style.visibility = 'hidden';
+   document.getElementById('connecting-div').style.visibility = 'visible';
+   document.getElementById('explorer-div').style.visibility = 'hidden';
 };
 
 //

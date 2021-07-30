@@ -135,7 +135,7 @@ module.exports = function(description, args, processFunction, argumentHelp) {
    }
    //
    // If the configuration file is defined, read it in and set the parameters based
-   // on the values inside; these will override any other arguments specified on 
+   // on the values inside; these will override any other arguments specified on
    // the command line.
    //
    if (!isUndefined(args.configFile)) {

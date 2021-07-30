@@ -72,10 +72,10 @@ function jobsClient(options) {
    // Track job subscriptions
    //
    // [
-   //    { 
+   //    {
    //       "thingName": "string",
    //       "operations": [
-   //          { 
+   //          {
    //             "operationName": "string",  // if null then treat as default
    //             "currentJob": job,
    //             "callback": callback
@@ -96,7 +96,7 @@ function jobsClient(options) {
    //
    this._updateJobStatus = function(thingName, job, status, statusDetails, callback) {
       // Check for omitted statusDetails and update parameters
-      if (typeof statusDetails === "function") {
+      if (typeof statusDetails === 'function') {
          callback = statusDetails;
          statusDetails = undefined;
       }
@@ -105,7 +105,7 @@ function jobsClient(options) {
          console.log('updateJobStatus:', { thingName: thingName, jobId: job.id, status: status, statusDetails: statusDetails });
       }
 
-      device.publish(buildJobTopic(thingName, job.id, 'update'), JSON.stringify({ status: status, statusDetails: statusDetails}), null, function(err){
+      device.publish(buildJobTopic(thingName, job.id, 'update'), JSON.stringify({ status: status, statusDetails: statusDetails}), null, function(err) {
          if (isUndefined(err)) {
             job.status = { status: status, statusDetails: statusDetails };
          }
@@ -114,7 +114,7 @@ function jobsClient(options) {
             callback(err);
          }
       });
-   }
+   };
 
    //
    // Private function to build job object for passing to callback supplied in subscribeToJobs
@@ -133,18 +133,18 @@ function jobsClient(options) {
 
       job.inProgress = function(statusDetails, callback) {
          that._updateJobStatus(thingName, job, 'IN_PROGRESS', statusDetails, callback);
-      }
+      };
 
       job.failed = function(statusDetails, callback) {
          that._updateJobStatus(thingName, job, 'FAILED', statusDetails, callback);
-      }
+      };
 
       job.succeeded = function(statusDetails, callback) {
          that._updateJobStatus(thingName, job, 'SUCCEEDED', statusDetails, callback);
-      }
+      };
 
       return job;
-   }
+   };
 
    //
    // Private function to handle job messages and process them accordingly
@@ -160,11 +160,11 @@ function jobsClient(options) {
 
       var thingName = topicTokens[2];
 
-      var thing = jobSubscriptions.find(function(elem) { 
-         return elem.thingName === thingName; 
+      var thing = jobSubscriptions.find(function(elem) {
+         return elem.thingName === thingName;
       });
 
-      // Do nothing if thing not found in job subscriptions 
+      // Do nothing if thing not found in job subscriptions
       if (isUndefined(thing)) {
          return;
       }
@@ -180,15 +180,15 @@ function jobsClient(options) {
          return;
       }
 
-      if (isUndefined(jobExecutionData.execution) || 
-          isUndefined(jobExecutionData.execution.jobId) || 
+      if (isUndefined(jobExecutionData.execution) ||
+          isUndefined(jobExecutionData.execution.jobId) ||
           isUndefined(jobExecutionData.execution.jobDocument)) {
          return;
       }
 
       var operationName = jobExecutionData.execution.jobDocument.operation;
-      var operation = thing.operations.find(function(elem) { 
-         return (isUndefined(operationName) ? isUndefined(elem.operationName) : operationName === elem.operationName); 
+      var operation = thing.operations.find(function(elem) {
+         return (isUndefined(operationName) ? isUndefined(elem.operationName) : operationName === elem.operationName);
       });
 
       // If operation subscription not found by operation name then look for default operation subscription
@@ -201,7 +201,7 @@ function jobsClient(options) {
       }
 
       operation.callback(null, that._buildJobObject(thingName, jobExecutionData.execution));
-   }
+   };
 
    this.subscribeToJobs = function(thingName, operationName, callback) {
       // Check for omitted optional operationName and fixup parameters
@@ -214,8 +214,8 @@ function jobsClient(options) {
          console.log('subscribeToJobs:', { thingName: thingName, operationName: operationName });
       }
 
-      var thing = jobSubscriptions.find(function(elem) { 
-         return elem.thingName === thingName; 
+      var thing = jobSubscriptions.find(function(elem) {
+         return elem.thingName === thingName;
       });
 
       // Check for previously unseen thing and add to job subscriptions
@@ -231,8 +231,8 @@ function jobsClient(options) {
       }
 
       // Find existing subscription for the given operationName
-      var operation = thing.operations.find(function(elem) { 
-         return (isUndefined(operationName) ? isUndefined(elem.operationName) : operationName === elem.operationName); 
+      var operation = thing.operations.find(function(elem) {
+         return (isUndefined(operationName) ? isUndefined(elem.operationName) : operationName === elem.operationName);
       });
 
       // If existing subscription found then update callback, otherwise create new entry in the thing's operations array
@@ -242,7 +242,7 @@ function jobsClient(options) {
          operation = { operationName: operationName, callback: callback };
          thing.operations.push(operation);
       }
-   }
+   };
 
    this.unsubscribeFromJobs = function(thingName, operationName, callback) {
       // Check for omitted optional operationName and fixup parameters
@@ -255,7 +255,7 @@ function jobsClient(options) {
          console.log('unsubscribeFromJobs:', { thingName: thingName, operationName: operationName });
       }
 
-      var iThing = jobSubscriptions.findIndex(function(elem) { 
+      var iThing = jobSubscriptions.findIndex(function(elem) {
          return elem.thingName === thingName;
       });
 
@@ -285,7 +285,7 @@ function jobsClient(options) {
       }
 
       callback();
-   }
+   };
 
    this.startJobNotifications = function(thingName, callback) {
       if ((!isUndefined(options)) && (options.debug === true)) {
@@ -293,7 +293,7 @@ function jobsClient(options) {
       }
 
       device.publish(buildJobTopic(thingName, '$next', 'get'), '{}', callback);
-   }
+   };
 
    device.on('connect', function() {
       that.emit('connect');

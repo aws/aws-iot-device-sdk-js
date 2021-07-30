@@ -27,7 +27,7 @@ var copyFile = require('./copy-file');
 //begin module
 
 var supportedProtocols = {
-    "https:": https
+    'https:': https
 };
 
 /**
