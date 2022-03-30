@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "crypto-js": "4.0.0",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "mqtt": "4.2.8",
     "websocket-stream": "^5.5.2"
   },
