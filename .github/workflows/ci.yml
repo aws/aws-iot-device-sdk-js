@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!main'
+
+env:
+  RUN: ${{ github.run_id }}-${{ github.run_number }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PACKAGE_NAME: aws-iot-device-sdk-js
+  AWS_EC2_METADATA_DISABLED: true
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [10.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Unit Tests - Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [10.x]
+        test-type: [websocket, certificate, custom-auth]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: ${{ matrix.test-type }} Integration Tests - Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: cd integration-testing && ./run-tests.sh ${{ matrix.test-type }}

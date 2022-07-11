@@ -1,0 +1,15 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+  pre_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-js
+      - bash ./continuous-delivery/update-version.sh
+  build:
+    commands:
+      - aws secretsmanager get-secret-value --secret-id V1JavascriptNpmAuthToken --region us-east-1 | jq -r .SecretString > .npmrc
+      - npm install
+      - npm pack
+      - npm --userconfig ./.npmrc publish aws-iot-device-sdk-*.tgz

@@ -27,3 +27,8 @@ debug
 # browser bundles    #
 ######################
 *bundle.js
+
+# misc #
+.npmrc
+*.tgz
+.idea

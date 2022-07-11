@@ -1,3 +1,9 @@
+## New Version Available
+
+A new AWS IoT Device SDK is [now available](https://github.com/awslabs/aws-iot-device-sdk-js-v2). It is a complete rework, built to improve reliability, performance, and security. We invite your feedback!
+
+This SDK will no longer receive feature updates, but will receive security updates.
+
 # AWS IoT SDK for JavaScript
 The aws-iot-device-sdk.js package allows developers to write JavaScript
 applications which access the AWS IoT Platform via [MQTT or MQTT over the Secure WebSocket Protocol](http://docs.aws.amazon.com/iot/latest/developerguide/protocols.html).  It can be used in Node.js environments as well as in browser applications.
@@ -88,6 +94,8 @@ ignore anything passed in programmatically.
 
 ### Device Class
 ```js
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
 var awsIot = require('aws-iot-device-sdk');
 
 //
@@ -121,8 +129,11 @@ device
     console.log('message', topic, payload.toString());
   });
 ```
+
 ### Thing Shadow Class
 ```js
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
 var awsIot = require('aws-iot-device-sdk');
 
 //
@@ -216,6 +227,8 @@ thingShadows.on('timeout',
 ```
 ### Jobs Class
 ```js
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
 var awsIot = require('aws-iot-device-sdk');
 
 //
@@ -346,14 +359,19 @@ follows:
   * `minimumConnectionTimeMs`: the minimum time in milliseconds that a connection must be maintained in order to be considered stable (default 20000)
   * `protocol`: the connection type, either 'mqtts' (default), 'wss' (WebSocket/TLS), or 'wss-custom-auth' (WebSocket/TLS with custom authentication).  Note that when set to 'wss', values must be provided for the Access Key ID and Secret Key in either the following options or in environment variables as specified in [WebSocket Configuration](#websockets). When set to 'wss-custom-auth', valid headers must be provided as specified in [Custom Auth](#custom-auth)
   * `websocketOptions`: if `protocol` is set to 'wss', you can use this parameter to pass additional options to the underlying WebSocket object; these options are documented [here](https://github.com/websockets/ws/blob/master/doc/ws.md#class-wswebsocket).
-  * `filename`: used to load credentials from the file different than the default localtion when `protocol` is set to 'wss'. Default value is '~/.aws/credentials'
+  * `filename`: used to load credentials from the file different than the default location when `protocol` is set to 'wss'. Default value is '~/.aws/credentials'
   * `profile`: used to specify which credential profile to be used when `protocol` is set to 'wss'.  Default value is 'default'
   * `accessKeyId`: used to specify the Access Key ID when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_ACCESS_KEY_ID` and `AWS_ACCESS_KEY_ID` from `filename` if set.
   * `secretKey`: used to specify the Secret Key when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_SECRET_ACCESS_KEY`and `AWS_SECRET_ACCESS_KEY`  from `filename` if set.
   * `sessionToken`: (required when authenticating via Cognito, optional otherwise) used to specify the Session Token when `protocol` is set to 'wss'.  Overrides the environment variable `AWS_SESSION_TOKEN` if set.
+  * `region`: used to specify AWS account region (e.g. 'us-east-1') when `protocol` is set to `wss`. If undefined, a value is derived from `host`.
   * `customAuthHeaders`: used to specify your custom authorization headers when `protocol` is set to 'wss-custom-auth'. The fields 'X-Amz-CustomAuthorizer-Name', 'X-Amz-CustomAuthorizer-Signature', and the field for your token name are required.
+  * `servername`: used for SNI. If undefined, a value is derived from `host`.
+  * `port`: used to specify which port to connect to. If undefined, 443 or 8883 will be chosen depending on `protocol`.
+  * `customAuthQueryString`: used to specify the token credentials in a query string for custom authorization when `protocol` is set to `wss-custom-auth`. More info can be found [here](https://docs.aws.amazon.com/iot/latest/developerguide/custom-auth.html#custom-auth-websockets).
   * `keepalive`: used to specify the time interval for each ping request. Default is set to 300 seconds to connect to AWS IoT.
   * `enableMetrics`: used to report SDK version usage metrics. It is set to true by default. To disable metrics collection, set value to false.
+  * `debug`: set to 'true' for verbose logging (default 'false').
 
 All certificates and keys must be in PEM format.
 
@@ -729,8 +747,8 @@ set the `protocol` option to `wss-custom-auth`.
 ### Custom Authorization Configuration
 
 To use custom authorization, you must first set up an authorizer function in Lambda and register it
-with IoT. Once you do, you will be able to authenticate using this function. To use custom auth,
-set the `customAuthHeaders` option to your headers object when instantiating the [awsIotDevice()](#device)
+with IoT. Once you do, you will be able to authenticate using this function. There are two ways to use custom auth:
+* set the `customAuthHeaders` option to your headers object when instantiating the [awsIotDevice()](#device)
 or [awsIot.thingShadow()](#thingShadow) classes. The headers object is an object containing the header name
 and values as key-value pairs:
 
@@ -740,6 +758,11 @@ and values as key-value pairs:
         'X-Amz-CustomAuthorizer-Signature': 'signature',
         'TestAuthorizerToken': 'token'
     }
+```
+* set the `customAuthQueryString` option to your headers object when instantiating the [awsIotDevice()](#device) class. The query string is a string containing the values as key-value pairs:
+
+```js
+    '?X-Amz-CustomAuthorizer-Name=TestAuthorizer&X-Amz-CustomAuthorizer-Signature=signature&TestAuthorizerToken=token'
 ```
 
 
@@ -832,7 +855,7 @@ directory specified.  Default certificate/key file names are as follows:
 
 * certificate.pem.crt: your AWS IoT certificate
 * private.pem.key: the private key associated with your AWS IoT certificate
-* root-CA.crt: the root CA certificate [(available from Symantec here)](https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem)
+* root-CA.crt: the root CA certificate [(available from the AWS documentation here)](https://docs.aws.amazon.com/iot/latest/developerguide/server-authentication.html#server-authentication-certs)
 
 #### Specify certificate names and locations individually
 
