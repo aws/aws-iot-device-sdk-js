@@ -16,7 +16,7 @@
 //node.js deps
 
 //npm deps
-const websocket = require('websocket-stream');
+var websocket = require('websocket-stream');
 
 //app deps
 
