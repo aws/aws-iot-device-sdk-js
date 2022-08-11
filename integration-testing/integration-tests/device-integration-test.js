@@ -47,7 +47,7 @@ var enableMetrics = true;
 if(args.Protocol === 'wss-custom-auth') {
   customAuthHeaders = JSON.parse(process.env.CUSTOM_AUTH_HEADERS);
   region = 'us-east-1';
-  customAuthUsername = "username?x-amz-customauthorizer-name=" + process.env.CUSTOM_AUTH_USERNAME;
+  customAuthUsername = "username?x-amz-customauthorizer-name=" + process.env.CUSTOM_AUTH_NAME;
   customAuthPassword = process.env.CUSTOM_AUTH_PASSWORD;
   enableMetrics = false;
 }
