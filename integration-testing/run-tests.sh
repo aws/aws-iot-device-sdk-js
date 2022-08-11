@@ -1,20 +1,20 @@
 #!/bin/bash
 #
-# Master integration test runner for the AWS IoT Node.js device SDK.  
+# Master integration test runner for the AWS IoT Node.js device SDK.
 #
 # USAGE
 #
 #     run-tests.sh <authentication-type>
 #
-# PARAMETERS 
+# PARAMETERS
 #
 #                        <authentication-type> : [websocket|certificate|custom-auth]
 #
 # This program will first validate the given parameters, then attempt to
 # retrieve required secrets from AWS secrets manager; if both are successful, it
-# will execute all of the scripts under the 'integration-tests' directory 
-# until either one of them exits with a non-zero status, or they have all 
-# been executed.  If this program exits with a zero status, that indicates 
+# will execute all of the scripts under the 'integration-tests' directory
+# until either one of them exits with a non-zero status, or they have all
+# been executed.  If this program exits with a zero status, that indicates
 # that both the test setup and the test execution was successful.
 #
 # RETURNS
@@ -24,9 +24,9 @@
 # SECRET HANDLING
 #
 # This script handles retrieving secrets from AWS secrets manager; for
-# websocket authentication, it will place the appropriate values in the AWS_ACCESS_KEY_ID 
+# websocket authentication, it will place the appropriate values in the AWS_ACCESS_KEY_ID
 # and AWS_SECRET_ACCESS_KEY environment variables used by the SDK.  For
-# certificate authentication, the certificate and private key will be stored 
+# certificate authentication, the certificate and private key will be stored
 # in PEM-format temporary files, along with the root CA certificate;
 # the files are named according to the default naming convention
 # specified in the README.md, and the following environment variable points
@@ -54,12 +54,12 @@ then
 
    if [ $AUTHENTICATION_TYPE"" != "websocket" ] && \
       [ $AUTHENTICATION_TYPE"" != "certificate" ] && \
-      [ $AUTHENTICATION_TYPE"" != "custom-auth" ]	  
+      [ $AUTHENTICATION_TYPE"" != "custom-auth" ]
    then
        echo ${0##*/}": authentication-type must be one of [websocket|certificate|custom-auth]"
        exit 2
    fi
-   export LONG_RUNNING_TEST="" 
+   export LONG_RUNNING_TEST=""
 else
    echo ${0##*/}" <authentication-type>"
    exit 1
@@ -103,7 +103,7 @@ then
    echo "###################################################################"
    echo ${0##*/}": unable to copy iot sdk to test directory!"
    echo "###################################################################"
-   exit 4    
+   exit 4
 fi
 
 #
@@ -129,7 +129,7 @@ then
    echo ${0##*/}": unable to npm install aws iot device sdk!"
    echo "###################################################################"
    exit 4
-fi    
+fi
 
 #
 # The SDK installed without errors; now, retrieve credentials
@@ -157,7 +157,7 @@ else
     exit 6
 fi
 
-case $AUTHENTICATION_TYPE"" in 
+case $AUTHENTICATION_TYPE"" in
 
    websocket)
        export AWS_ACCESS_KEY_ID=$principal
@@ -172,15 +172,20 @@ case $AUTHENTICATION_TYPE"" in
        echo ${0##*/}": setting custom-auth credentials"
        echo "###################################################################"
 
-       export CUSTOM_AUTH_HEADERS="{ \"X-Amz-CustomAuthorizer-Name\": \"SDKTestAuthorizer\", \"X-Amz-CustomAuthorizer-Signature\": \"vHPdrbNsr24wR+OcR45el1xh14MtJu5zLPp5ZhoJo9mGCmWQcFj9wPhgYWmgX/900T3NFhB+c7fN8Cln7r6ZszMQP48fjFiF95FmqlXPENlEDWuLN8kCVE3BRr12fcvXDNo9gPEWYE71KkWDLTrqtuOIDFAp39zduEPhzN3bj0yn+0RCMA7X9Q3BNxJji+Rq1U68jCWTjGay9cz3P+PnxfL5zqnoeJhg7baJG+xf7b1kmDw9lMzUSXNGs6FTxO66TzOscZ6I8oOWrMUvTSe24j4POs00bROOTWc0XXoCvX/v4W+TI/Oe3jnJXfXcmOqLXLPqapgWL2XobiOnFjl0PA==\", \"SDKTestAuthorizerToken\": \"abc123\" }"
+       # export CUSTOM_AUTH_HEADERS="{ \"X-Amz-CustomAuthorizer-Name\": \"SDKTestAuthorizer\", \"X-Amz-CustomAuthorizer-Signature\": \"vHPdrbNsr24wR+OcR45el1xh14MtJu5zLPp5ZhoJo9mGCmWQcFj9wPhgYWmgX/900T3NFhB+c7fN8Cln7r6ZszMQP48fjFiF95FmqlXPENlEDWuLN8kCVE3BRr12fcvXDNo9gPEWYE71KkWDLTrqtuOIDFAp39zduEPhzN3bj0yn+0RCMA7X9Q3BNxJji+Rq1U68jCWTjGay9cz3P+PnxfL5zqnoeJhg7baJG+xf7b1kmDw9lMzUSXNGs6FTxO66TzOscZ6I8oOWrMUvTSe24j4POs00bROOTWc0XXoCvX/v4W+TI/Oe3jnJXfXcmOqLXLPqapgWL2XobiOnFjl0PA==\", \"SDKTestAuthorizerToken\": \"abc123\" }"
+
+       # We need the custom authorization headers to use custom authorization, but we will verify via username and password
+       export CUSTOM_AUTH_HEADERS="{}"
+       export CUSTOM_AUTH_NAME=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/authorizer-name" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+       export CUSTOM_AUTH_PASSWORD=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/authorizer-password" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 
        # Make sure it won't reject the internal cert used by Gamma PDX. Once we switch to prod, remove this line
-       export NODE_TLS_REJECT_UNAUTHORIZED=0
+       # export NODE_TLS_REJECT_UNAUTHORIZED=0
 
        $RUN_INTEGRATION_TESTS
        exit $?
        ;;
-   
+
    certificate)
        export JOBS_AWS_ACCESS_KEY_ID=$principal
        export JOBS_AWS_SECRET_ACCESS_KEY=$credential
@@ -212,7 +217,7 @@ case $AUTHENTICATION_TYPE"" in
 	   echo ${0##*/}": couldn't retrieve Private Key!"
 	   exit 6
        fi
-       
+
        #
        # Retrieve the root CA certificate
        #

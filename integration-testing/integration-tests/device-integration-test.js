@@ -39,10 +39,17 @@ if (!isUndefined(topicPrefix)) {
 
 var customAuthHeaders;
 var region = args.region;
+var customAuthUsername;
+var customAuthPassword;
+
+var enableMetrics = true;
 
 if(args.Protocol === 'wss-custom-auth') {
   customAuthHeaders = JSON.parse(process.env.CUSTOM_AUTH_HEADERS);
-  region = 'us-west-2';
+  region = 'us-east-1';
+  customAuthUsername = "username?x-amz-customauthorizer-name=" + process.env.CUSTOM_AUTH_USERNAME;
+  customAuthPassword = process.env.CUSTOM_AUTH_PASSWORD;
+  enableMetrics = false;
 }
 
 //
@@ -62,7 +69,10 @@ const device = deviceModule({
   port: args.Port,
   host: args.Host,
   debug: args.Debug,
-  customAuthHeaders: customAuthHeaders
+  customAuthHeaders: customAuthHeaders,
+  username: customAuthUsername,
+  password: customAuthPassword,
+  enableMetrics: enableMetrics,
 });
 
 var timeout;
@@ -127,17 +137,17 @@ device
         }, Math.max(args.delay,minimumDelay) );  // clip to minimum
     }
     });
-device 
+device
   .on('close', function() {
     console.log('close');
     process.exit(1);
   });
-device 
+device
   .on('reconnect', function() {
     console.log('reconnect');
     process.exit(1);
   });
-device 
+device
   .on('offline', function() {
     console.log('offline');
     process.exit(1);
@@ -149,7 +159,7 @@ device
   });
 device
   .on('message', function(topic, payload) {
-    
+
     var stateObject = JSON.parse( payload.toString() );
     console.log('received on \''+topic+'\': '+payload.toString());
     if (!isUndefined( stateObject.value ))

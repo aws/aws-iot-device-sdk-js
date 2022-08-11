@@ -5,7 +5,7 @@
 #
 # Check to make sure the top-level test directory is defined.
 #
-if [ $NPMTEST_DIR"" = "" ] 
+if [ $NPMTEST_DIR"" = "" ]
 then
    echo ${0##*/}": NPMTEST_DIR must be defined!"
    exit 1
@@ -21,7 +21,8 @@ NODE=node
 #
 TEST_TAG="test-"$RANDOM
 export HOSTNAME="ajje7lpljulm4-ats.iot.us-east-1.amazonaws.com"
-export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
+# export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
+export CUSTOM_AUTH_HOST=$(aws secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 #
 # Capture the exit code of the first command which fails in a pipeline.
 #
@@ -120,7 +121,7 @@ then
    #
    cat $PROC1_OUTFILE | grep -E '^quality' |awk '{print $NF}'
    receiveQuality=`cat $PROC1_OUTFILE | grep -E '^quality' |awk '{print $NF}'`
-   
+
    #
    # We should receive all of these; allow only a very small error margin.
    #

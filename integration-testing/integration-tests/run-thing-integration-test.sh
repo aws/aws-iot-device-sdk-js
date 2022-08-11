@@ -5,7 +5,7 @@
 #
 # Check to make sure the top-level test directory is defined.
 #
-if [ $NPMTEST_DIR"" = "" ] 
+if [ $NPMTEST_DIR"" = "" ]
 then
    echo ${0##*/}": NPMTEST_DIR must be defined!"
    exit 1
@@ -21,7 +21,8 @@ NODE=node
 #
 TEST_TAG="test-"$RANDOM
 export HOSTNAME="ajje7lpljulm4-ats.iot.us-east-1.amazonaws.com"
-export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
+# export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
+export CUSTOM_AUTH_HOST=$(aws secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 #
 # Capture the exit code of the first command which fails in a pipeline.
 #
@@ -95,7 +96,7 @@ then
    receiveMask1=`cat $PROC1_OUTFILE | grep -E '^[0-9]+\ messages received, accumulator=.*' |awk '{print $4}'|sed -e 's/.*=//'`
    numReceived2=`cat $PROC2_OUTFILE | grep -E '^[0-9]+\ messages received, accumulator=.*' |awk '{print $1}'`
    receiveMask2=`cat $PROC2_OUTFILE | grep -E '^[0-9]+\ messages received, accumulator=.*' |awk '{print $4}'|sed -e 's/.*=//'`
-   
+
    echo "proc 1: "$numReceived1" messages received, receive mask ["$receiveMask1"]"
    echo "proc 2: "$numReceived2" messages received, receive mask ["$receiveMask2"]"
 
