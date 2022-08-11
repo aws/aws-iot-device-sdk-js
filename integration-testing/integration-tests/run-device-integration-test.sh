@@ -34,7 +34,7 @@ RECEIVES_REQUIRED=46
 TRANSMITS_TOTAL=48
 export HOSTNAME="ajje7lpljulm4-ats.iot.us-east-1.amazonaws.com"
 # export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
-export CUSTOM_AUTH_HOST=$(aws secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+export CUSTOM_AUTH_HOST=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 #
 # Process output will be captured in these files.
 #
