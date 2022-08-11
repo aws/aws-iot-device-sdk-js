@@ -43,10 +43,17 @@ function processTest(args) {
 
    var customAuthHeaders;
    var region = args.region;
+   var customAuthUsername;
+   var customAuthPassword;
+
+   var enableMetrics = true;
 
    if(args.Protocol === 'wss-custom-auth') {
       customAuthHeaders = JSON.parse(process.env.CUSTOM_AUTH_HEADERS);
-      region = 'us-west-2';
+      region = 'us-east-1';
+      customAuthUsername = "username?x-amz-customauthorizer-name=" + process.env.CUSTOM_AUTH_NAME;
+      customAuthPassword = process.env.CUSTOM_AUTH_PASSWORD;
+      enableMetrics = false;
    }
 
    //
@@ -69,7 +76,10 @@ function processTest(args) {
       port: args.Port,
       host: args.Host,
       debug: args.Debug,
-      customAuthHeaders: customAuthHeaders
+      customAuthHeaders: customAuthHeaders,
+      username: customAuthUsername,
+      password: customAuthPassword,
+      enableMetrics: enableMetrics,
    });
    var receiveCount = 0;
    var outOfOrderCount = 0;

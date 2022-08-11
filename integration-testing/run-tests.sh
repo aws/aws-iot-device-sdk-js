@@ -172,15 +172,10 @@ case $AUTHENTICATION_TYPE"" in
        echo ${0##*/}": setting custom-auth credentials"
        echo "###################################################################"
 
-       # export CUSTOM_AUTH_HEADERS="{ \"X-Amz-CustomAuthorizer-Name\": \"SDKTestAuthorizer\", \"X-Amz-CustomAuthorizer-Signature\": \"vHPdrbNsr24wR+OcR45el1xh14MtJu5zLPp5ZhoJo9mGCmWQcFj9wPhgYWmgX/900T3NFhB+c7fN8Cln7r6ZszMQP48fjFiF95FmqlXPENlEDWuLN8kCVE3BRr12fcvXDNo9gPEWYE71KkWDLTrqtuOIDFAp39zduEPhzN3bj0yn+0RCMA7X9Q3BNxJji+Rq1U68jCWTjGay9cz3P+PnxfL5zqnoeJhg7baJG+xf7b1kmDw9lMzUSXNGs6FTxO66TzOscZ6I8oOWrMUvTSe24j4POs00bROOTWc0XXoCvX/v4W+TI/Oe3jnJXfXcmOqLXLPqapgWL2XobiOnFjl0PA==\", \"SDKTestAuthorizerToken\": \"abc123\" }"
-
        # We need the custom authorization headers to use custom authorization, but we will verify via username and password
        export CUSTOM_AUTH_HEADERS="{}"
        export CUSTOM_AUTH_NAME=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/authorizer-name" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
        export CUSTOM_AUTH_PASSWORD=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/authorizer-password" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-
-       # Make sure it won't reject the internal cert used by Gamma PDX. Once we switch to prod, remove this line
-       # export NODE_TLS_REJECT_UNAUTHORIZED=0
 
        $RUN_INTEGRATION_TESTS
        exit $?

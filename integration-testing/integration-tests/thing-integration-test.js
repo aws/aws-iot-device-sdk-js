@@ -30,13 +30,13 @@ const isUndefined    = require('../common/lib/is-undefined.js');
 // and subscribes to an MQTT topic; the other (-t 2) listens to deltas on the thing
 // shadow and publishes to the MQTT topic.  The mode 1 process sends a value with
 // each update and doubles it afterwards; the mode 2 process publishes this value
-// back to the mode 1 process.  Each process adds the value received in an 
+// back to the mode 1 process.  Each process adds the value received in an
 // accumulator.  After the mode 1 process has sent 48 messages, it prepares to exit
-// and sends a 'quit' command on the thing shadow which forces the mode 2 process 
+// and sends a 'quit' command on the thing shadow which forces the mode 2 process
 // to enter its exit logic.  As both processes exit, they count the number of bits
 // set in their accumulators.  This test verifies that thing shadow update and
 // deltas are working as well as non-thing publish and subscribe.  Since actual
-// values are used in the test, it verifies that simple state objects are 
+// values are used in the test, it verifies that simple state objects are
 // transferred correctly, and because it maintains a bitmask of received values it
 // allows for some messages to be lost due to QOS:0.  A passing integration test
 // here should probably expect >90% of the messages to be received on both sides.
@@ -69,10 +69,17 @@ if (!isUndefined(topicPrefix)) {
 
 var customAuthHeaders;
 var region = args.region;
+var customAuthUsername;
+var customAuthPassword;
+
+var enableMetrics = true;
 
 if(args.Protocol === 'wss-custom-auth') {
   customAuthHeaders = JSON.parse(process.env.CUSTOM_AUTH_HEADERS);
-  region = 'us-west-2';
+  region = 'us-east-1';
+  customAuthUsername = "username?x-amz-customauthorizer-name=" + process.env.CUSTOM_AUTH_NAME;
+  customAuthPassword = process.env.CUSTOM_AUTH_PASSWORD;
+  enableMetrics = false;
 }
 
 //
@@ -89,7 +96,10 @@ const thingShadows = thingShadow({
   port: args.Port,
   host: args.Host,
   debug: args.Debug,
-  customAuthHeaders: customAuthHeaders
+  customAuthHeaders: customAuthHeaders,
+  username: customAuthUsername,
+  password: customAuthPassword,
+  enableMetrics: enableMetrics,
 });
 
 var value=1;
@@ -118,7 +128,7 @@ function checkAccumulator()
 }
 
 //
-// This test demonstrates the use of thing shadows along with 
+// This test demonstrates the use of thing shadows along with
 // non-thing topics.  One process updates a thing shadow and
 // subscribes to a non-thing topic; the other receives delta
 // updates on the thing shadow on publishes to the non-thing
@@ -129,7 +139,7 @@ function updateThingShadow( )
    if (count < 48)
    {
       console.log('updating thing shadow...');
-      clientToken = thingShadows.update( integrationTestShadow, 
+      clientToken = thingShadows.update( integrationTestShadow,
                        { state: { desired: { value: value, quit: 0 }}} );
       value = value*2;
       count++;
@@ -140,7 +150,7 @@ function updateThingShadow( )
 //
 // Tell the partner to exit.
 //
-      clientToken = thingShadows.update( integrationTestShadow, 
+      clientToken = thingShadows.update( integrationTestShadow,
                        { state: { desired: { value: value, quit: 1 }}} );
       setTimeout( function() { process.exit(0); }, 500 );
    }
@@ -169,23 +179,23 @@ thingShadows
        else
        {
 //
-// This process will listen to deltas on a thing shadow and publish to a 
+// This process will listen to deltas on a thing shadow and publish to a
 // non-thing topic.
 //
           thingShadows.register( integrationTestShadow );
        }
     });
-thingShadows 
+thingShadows
   .on('close', function() {
     console.log('close');
     process.exit(1);
   });
-thingShadows 
+thingShadows
   .on('reconnect', function() {
     console.log('reconnect');
     process.exit(1);
   });
-thingShadows 
+thingShadows
   .on('offline', function() {
     console.log('offline');
     process.exit(1);
@@ -201,7 +211,7 @@ thingShadows
     accumulator += JSON.parse( payload.toString() ).value;
     clearInterval( timer );
 //
-// After a few seconds, update the thing shadow and if no message has 
+// After a few seconds, update the thing shadow and if no message has
 // been received after 10 seconds, try again.
 //
     setTimeout( function() {
@@ -219,7 +229,7 @@ if (args.testMode===2)
 {
    thingShadows
      .on('delta', function(thingName, stateObject) {
- 
+
         console.log('received delta, state='+JSON.stringify( stateObject.state));
 
         if (!stateObject.state.quit)
@@ -234,8 +244,8 @@ if (args.testMode===2)
 // Our partner has told us the test has ended; it's our responsibility to delete
 // the shadow afterwards and then exit ourselves.
 //
-           setTimeout( function() { 
-              thingShadows.delete( integrationTestShadow ); 
+           setTimeout( function() {
+              thingShadows.delete( integrationTestShadow );
               setTimeout( function() { process.exit(0); }, 500 ); }, 500 );
         }
      });

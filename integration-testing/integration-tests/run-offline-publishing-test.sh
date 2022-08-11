@@ -21,7 +21,6 @@ NODE=node
 #
 TEST_TAG="test-"$RANDOM
 export HOSTNAME="ajje7lpljulm4-ats.iot.us-east-1.amazonaws.com"
-# export CUSTOM_AUTH_HOST="ajje7lpljulm4.gamma.us-west-2.iot.amazonaws.com"
 export CUSTOM_AUTH_HOST=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 #
 # Capture the exit code of the first command which fails in a pipeline.
