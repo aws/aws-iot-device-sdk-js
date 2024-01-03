@@ -10,7 +10,7 @@
   "homepage": "https://github.com/aws/aws-iot-device-sdk-js",
   "main": "index.js",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
