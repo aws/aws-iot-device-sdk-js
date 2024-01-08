@@ -59,7 +59,7 @@ be incorporated into a customized agent to meet specific application needs.
 <a name="install"></a>
 ## Installation
 
-**NOTE:** AWS IoT Node.js SDK will only support Node version 10 or above.
+**NOTE:** AWS IoT Node.js SDK will only support Node version 8 or above.
 
 You can check your node version by
 
