@@ -513,7 +513,7 @@ function DeviceClient(options) {
 
       if (!isUndefined(options.host) && isUndefined(options.region)) {
          // extract anything in between "iot" and "amazonaws" as region
-         var pattern = /[a-zA-Z0-9]+\.iot\.(.*)\.amazonaws\..+/;
+         var pattern = /[a-zA-Z0-9]+\.iot\.([^\.]+)\.amazonaws\..+/;
          var region = pattern.exec(options.host);
          if (region === null) {
             console.log('Host endpoint is not valid');
