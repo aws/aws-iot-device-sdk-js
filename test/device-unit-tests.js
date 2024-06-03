@@ -616,6 +616,18 @@ describe( "device class unit tests", function() {
          );
       });
    });
+   describe("device extract the region from host value", function () {
+      it("does not throw an exception", function () {
+         assert.doesNotThrow(function (err) {
+            var device = deviceModule({
+               host: 'XXXX.iot.us-east-1.amazonaws.com',
+               protocol: 'wss'
+            });
+         }, function (err) { console.log('\t[' + err + ']'); return true; }
+         );
+         assert.equal(mqttSave.firstCall.args[1].region, "us-east-1");
+      });
+   });
    describe( "device doesn't accept invalid timing parameters: baseReconnectTimeMs<1", function() {
       it("throws an exception", function() {
          assert.throws( function( err ) {
