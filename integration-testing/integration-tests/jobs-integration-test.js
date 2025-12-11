@@ -22,7 +22,7 @@ const jobsModule   = require('..').jobs;
 const cmdLineProcess = require('../examples/lib/cmdline');
 const isUndefined    = require('../common/lib/is-undefined.js');
 const awsSDK = require('aws-sdk');
-awsSDK.config.update({ "accessKeyId": process.env.JOBS_AWS_ACCESS_KEY_ID, "secretAccessKey": process.env.JOBS_AWS_SECRET_ACCESS_KEY, "region": "us-east-1" });
+awsSDK.config.update({ "region": "us-east-1" });
 
 var iot = new awsSDK.Iot();
 
