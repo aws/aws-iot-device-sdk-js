@@ -13,6 +13,9 @@ env:
   CRT_CI_ROLE: ${{ secrets.CRT_CI_ROLE_ARN }}
   AWS_DEFAULT_REGION: us-east-1
 
+permissions:
+  id-token: write # This is required for requesting the JWT
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
