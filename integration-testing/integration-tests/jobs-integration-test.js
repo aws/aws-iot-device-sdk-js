@@ -139,7 +139,7 @@ jobs
         var jobIdPrefix = 'test-job-id-' + (Math.floor(Math.random() * 99999999)).toString();
 
         for (var i = 0; i < jobCount; i++) {
-          iot.createJob({ jobId: jobIdPrefix + '-' + i.toString(), targets: [ 'arn:aws:iot:us-east-1:809478692717:thing/' + preRegisteredThingName ], document: '{ "operation":"test' + i.toString() + '", "jobNum": ' + i.toString() + ' }' }, function(err, data) {
+          iot.createJob({ jobId: jobIdPrefix + '-' + i.toString(), targets: [ 'arn:aws:iot:us-east-1:123124136734:thing/' + preRegisteredThingName ], document: '{ "operation":"test' + i.toString() + '", "jobNum": ' + i.toString() + ' }' }, function(err, data) {
             console.log('createJob:');
             if (isUndefined(err)) {
               console.log(data);
