@@ -79,13 +79,13 @@ then
     echo "###################################################################"
     echo ${0##*/}": running device integration test (websocket/custom auth)"
     echo "###################################################################"
-    $NODE $INT_TEST_DIR/offline-publishing-test.js -H HOSTNAME -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
+    $NODE $INT_TEST_DIR/offline-publishing-test.js -H $HOSTNAME -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
     PROC1_PID=$!
     sleep 3       # wait 3 seconds prior to starting transmitting process
     #
     # transmit 4x/second
     #
-    $NODE $INT_TEST_DIR/offline-publishing-test.js -H HOSTNAME -P=wss-custom-auth -t2 --debug=true --delay-ms=250 -T $TEST_TAG | tee $PROC2_OUTFILE &
+    $NODE $INT_TEST_DIR/offline-publishing-test.js -H $HOSTNAME -P=wss-custom-auth -t2 --debug=true --delay-ms=250 -T $TEST_TAG | tee $PROC2_OUTFILE &
     PROC2_PID=$!
 else
     echo "###################################################################"
