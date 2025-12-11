@@ -63,9 +63,9 @@ then
     echo "###################################################################"
     echo ${0##*/}": running device integration test (websocket/custom auth)"
     echo "###################################################################"
-    $NODE $INT_TEST_DIR/thing-integration-test.js -H HOSTNAME -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
+    $NODE $INT_TEST_DIR/thing-integration-test.js -H $HOSTNAME -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
     PROC1_PID=$!
-    $NODE $INT_TEST_DIR/thing-integration-test.js -H HOSTNAME -P=wss-custom-auth -t2 --debug=true -T $TEST_TAG | tee $PROC2_OUTFILE &
+    $NODE $INT_TEST_DIR/thing-integration-test.js -H $HOSTNAME -P=wss-custom-auth -t2 --debug=true -T $TEST_TAG | tee $PROC2_OUTFILE &
     PROC2_PID=$!
 else
     echo "###################################################################"
