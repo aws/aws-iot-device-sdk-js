@@ -179,15 +179,11 @@ function arrayEach(array, iterFunction) {
     }
 }
 
-let sensitiveProperties = new Set([
-    'username',
-    'password',
-    'key',
-    'customAuthHeaders'
-]);
-
 function isSensitiveProperty(property) {
-    return sensitiveProperties.has(property);
+    return property === "username" ||
+        property === "password" ||
+        property === "key" ||
+        property === "customAuthHeaders";
 }
 
 // only checks top-level keys which is good enough for our purposes
