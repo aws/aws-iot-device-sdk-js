@@ -188,6 +188,7 @@ function isSensitiveProperty(property) {
         property === "cert";
 }
 
+/*
 function logSensitiveObject(options) {
     console.log('{');
     Object.keys(options).forEach(function(property) {
@@ -198,6 +199,20 @@ function logSensitiveObject(options) {
         }
     });
     console.log('}');
+}*/
+
+function logSensitiveObject(options) {
+    let optionsLog = ['{'];
+    Object.keys(options).forEach(function(property) {
+        if (!isSensitiveProperty(property)) {
+            optionsLog.push("  " + property + " : " + options[property]);
+        } else {
+            optionsLog.push("  " + property + " : [redacted]");
+        }
+    });
+    optionsLog.push('}');
+
+    console.log(optionsLog.join('\n'));
 }
 
 function getCredentials(ini) {
