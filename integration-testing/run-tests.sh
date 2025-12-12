@@ -131,38 +131,9 @@ then
    exit 4
 fi
 
-#
-# The SDK installed without errors; now, retrieve credentials
-#
-echo "###################################################################"
-echo ${0##*/}": retrieving AWS credentials from AWS SecretsManager"
-echo "###################################################################"
-# fetch secret value and strip quotes with sed
-principal=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketAccessKeyId --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
-if [ $? == "0" ]
-then
-    echo ${0##*/}": retrieved ws testing access key id"
-else
-    echo ${0##*/}": couldn't retrieve ws testing access key id!"
-    exit 5
-fi
-
-# fetch secret value and strip quotes with sed
-credential=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestWebsocketSecretAccessKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p')
-if [ $? == "0" ]
-then
-    echo ${0##*/}": retrieved ws testing secret access key"
-else
-    echo ${0##*/}": couldn't retrieve ws testing secret access key!"
-    exit 6
-fi
-
 case $AUTHENTICATION_TYPE"" in
 
    websocket)
-       export AWS_ACCESS_KEY_ID=$principal
-       export AWS_SECRET_ACCESS_KEY=$credential
-
        $RUN_INTEGRATION_TESTS
        exit $?
        ;;
@@ -182,9 +153,6 @@ case $AUTHENTICATION_TYPE"" in
        ;;
 
    certificate)
-       export JOBS_AWS_ACCESS_KEY_ID=$principal
-       export JOBS_AWS_SECRET_ACCESS_KEY=$credential
-
        export CERT_DIR=$NPMTEST_DIR/certs
        mkdir -p $CERT_DIR
        echo "###################################################################"
@@ -192,7 +160,7 @@ case $AUTHENTICATION_TYPE"" in
        echo "###################################################################"
 
        # fetch secret value, strip quotes and replace "\n" with an actual newline
-       aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestCertificate --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
+       aws --region us-east-1 secretsmanager get-secret-value --secret-id ci/mqtt5/us/Mqtt5Prod/cert --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
 /g' > $CERT_DIR/certificate.pem.crt
        if [ $? == "0" ]
        then
@@ -203,7 +171,7 @@ case $AUTHENTICATION_TYPE"" in
        fi
 
        # fetch secret value, strip quotes and replace "\n" with an actual newline
-       aws --region us-east-1 secretsmanager get-secret-value --secret-id V1IotSdkIntegrationTestPrivateKey --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
+       aws --region us-east-1 secretsmanager get-secret-value --secret-id ci/mqtt5/us/Mqtt5Prod/key --query SecretString | sed -n 's/^"\(.*\)"/\1/p' | sed 's/\\n/\
 /g' > $CERT_DIR/private.pem.key
        if [ $? == "0" ]
        then

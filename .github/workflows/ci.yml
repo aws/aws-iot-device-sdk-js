@@ -8,10 +8,13 @@ on:
 
 env:
   RUN: ${{ github.run_id }}-${{ github.run_number }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   PACKAGE_NAME: aws-iot-device-sdk-js
   AWS_EC2_METADATA_DISABLED: true
+  CRT_CI_ROLE: ${{ secrets.CRT_CI_ROLE_ARN }}
+  AWS_DEFAULT_REGION: us-east-1
+
+permissions:
+  id-token: write # This is required for requesting the JWT
 
 jobs:
   unit-tests:
@@ -44,4 +47,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.CRT_CI_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - run: cd integration-testing && ./run-tests.sh ${{ matrix.test-type }}
