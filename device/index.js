@@ -113,10 +113,6 @@ function signUrl(method, scheme, hostname, path, queryParams, accessId, secretKe
 
    var signingKey = getSignatureKey(secretKey, today, region, serviceName);
 
-   if (debug === true) {
-      console.log('signing key: ' + signingKey + '\n');
-   }
-
    var signature = hmacSHA256(stringToSign, signingKey, {
       asBytes: true
    });
@@ -181,6 +177,30 @@ function arrayEach(array, iterFunction) {
             iterFunction.call(this, array[idx], parseInt(idx, 10));
         }
     }
+}
+
+let sensitiveProperties = new Set([
+    'username',
+    'password',
+    'key',
+    'customAuthHeaders'
+]);
+
+function isSensitiveProperty(property) {
+    return sensitiveProperties.has(property);
+}
+
+// only checks top-level keys which is good enough for our purposes
+function logSensitiveObject(options) {
+    console.log('{');
+    for (const property in options) {
+        if (Object.prototype.hasOwnProperty.call(options, property)) {
+            if (!isSensitiveProperty(property)) {
+                console.log(`${property}: ${options[property]}`);
+            }
+        }
+    }
+    console.log('}');
 }
 
 function getCredentials(ini) {
@@ -541,7 +561,7 @@ function DeviceClient(options) {
    }
 
    if ((!isUndefined(options)) && (options.debug === true)) {
-      console.log(options);
+       logSensitiveObject(options);
       console.log('attempting new mqtt connection...');
    }
    //connect and return the client instance to map all mqttjs apis
