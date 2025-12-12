@@ -179,7 +179,6 @@ function arrayEach(array, iterFunction) {
     }
 }
 
-
 function isSensitiveProperty(property) {
     return property === "username" ||
         property === "password" ||
@@ -187,19 +186,6 @@ function isSensitiveProperty(property) {
         property === "customAuthHeaders" ||
         property === "cert";
 }
-
-/*
-function logSensitiveObject(options) {
-    console.log('{');
-    Object.keys(options).forEach(function(property) {
-        if (!isSensitiveProperty(property)) {
-            console.log("  " + property + " : " + options[property]);
-        } else {
-            console.log("  " + property + " : [redacted]");
-        }
-    });
-    console.log('}');
-}*/
 
 function logSensitiveObject(options) {
     var optionsLog = ["{"];
