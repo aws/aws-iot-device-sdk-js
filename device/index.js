@@ -192,15 +192,10 @@ function logSensitiveObject(options) {
     console.log('{');
     Object.entries(options).forEach(function([property, value]) {
         if (!isSensitiveProperty(property)) {
-            if (value !== undefined) {
-                console.log("  " + property + " : undefined");
-            } else {
-                console.log("  " + property + " : " + value);
-            }
-
-        } else {
+            console.log("  " + property + " : " + value);
+        } /*else {
             console.log("  " + property + " : [redacted]");
-        }
+        }*/
     });
     console.log('}');
 }
