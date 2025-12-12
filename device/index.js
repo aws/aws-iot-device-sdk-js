@@ -179,7 +179,7 @@ function arrayEach(array, iterFunction) {
     }
 }
 
-/*
+
 function isSensitiveProperty(property) {
     return property === "username" ||
         property === "password" ||
@@ -196,11 +196,11 @@ function logSensitiveObject(options) {
     });
     console.log('}');
 }
-*/
+/*
 function logSensitiveObject(options) {
     console.log(options);
 }
-
+*/
 function getCredentials(ini) {
     //Get shared credential function from AWS SDK.
     var map = {};
