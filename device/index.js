@@ -192,7 +192,7 @@ function logSensitiveObject(options) {
     Object.keys(options).forEach(function(property) {
         if (!isSensitiveProperty(property)) {
             //console.log(`${property}: ${options[property]}`);
-            console.log(property + ": " + options[property].toString());
+            console.log(property + " : " + options[property]);
         }
     });
     console.log('}');
