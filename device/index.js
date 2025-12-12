@@ -184,24 +184,27 @@ function isSensitiveProperty(property) {
     return property === "username" ||
         property === "password" ||
         property === "key" ||
-        property === "customAuthHeaders";
+        property === "customAuthHeaders" ||
+        property === "cert";
 }
 
 function logSensitiveObject(options) {
     console.log('{');
-    Object.keys(options).forEach(function(property) {
+    Object.entries(options).forEach(function([property, value]) {
         if (!isSensitiveProperty(property)) {
-            //console.log(`${property}: ${options[property]}`);
-            console.log(property + " : " + options[property]);
+            if (value !== undefined) {
+                console.log("  " + property + " : undefined");
+            } else {
+                console.log("  " + property + " : " + value);
+            }
+
+        } else {
+            console.log("  " + property + " : <redacted>");
         }
     });
     console.log('}');
 }
-/*
-function logSensitiveObject(options) {
-    console.log(options);
-}
-*/
+
 function getCredentials(ini) {
     //Get shared credential function from AWS SDK.
     var map = {};
