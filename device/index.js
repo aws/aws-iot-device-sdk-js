@@ -193,7 +193,7 @@ function isSensitiveProperty(property) {
 // only checks top-level keys which is good enough for our purposes
 function logSensitiveObject(options) {
     console.log('{');
-    for (const property in options) {
+    for (let property in options) {
         if (Object.prototype.hasOwnProperty.call(options, property)) {
             if (!isSensitiveProperty(property)) {
                 console.log(`${property}: ${options[property]}`);
