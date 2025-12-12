@@ -189,13 +189,11 @@ function isSensitiveProperty(property) {
 
 function logSensitiveObject(options) {
     console.log('{');
-    for (let property in options) {
-        if (Object.prototype.hasOwnProperty.call(options, property)) {
-            if (!isSensitiveProperty(property)) {
-                console.log(`${property}: ${options[property]}`);
-            }
+    Object.keys(options).forEach(function(property) {
+        if (isSensitiveProperty(property)) {
+            console.log(`${property}: ${options[property]}`);
         }
-    }
+    });
     console.log('}');
 }
 */
