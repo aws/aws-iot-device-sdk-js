@@ -179,6 +179,7 @@ function arrayEach(array, iterFunction) {
     }
 }
 
+/*
 function isSensitiveProperty(property) {
     return property === "username" ||
         property === "password" ||
@@ -186,7 +187,6 @@ function isSensitiveProperty(property) {
         property === "customAuthHeaders";
 }
 
-// only checks top-level keys which is good enough for our purposes
 function logSensitiveObject(options) {
     console.log('{');
     for (let property in options) {
@@ -197,6 +197,10 @@ function logSensitiveObject(options) {
         }
     }
     console.log('}');
+}
+*/
+function logSensitiveObject(options) {
+    console.log(options);
 }
 
 function getCredentials(ini) {
