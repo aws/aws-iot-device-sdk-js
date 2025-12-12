@@ -202,7 +202,7 @@ function logSensitiveObject(options) {
 }*/
 
 function logSensitiveObject(options) {
-    let optionsLog = ['{'];
+    var optionsLog = ["{"];
     Object.keys(options).forEach(function(property) {
         if (!isSensitiveProperty(property)) {
             optionsLog.push("  " + property + " : " + options[property]);
@@ -210,9 +210,9 @@ function logSensitiveObject(options) {
             optionsLog.push("  " + property + " : [redacted]");
         }
     });
-    optionsLog.push('}');
+    optionsLog.push("}");
 
-    console.log(optionsLog.join('\n'));
+    console.log(optionsLog.join("\n"));
 }
 
 function getCredentials(ini) {
