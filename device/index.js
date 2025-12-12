@@ -199,7 +199,7 @@ function logSensitiveObject(options) {
             }
 
         } else {
-            console.log("  " + property + " : <redacted>");
+            console.log("  " + property + " : [redacted]");
         }
     });
     console.log('}');
