@@ -32,8 +32,7 @@ set -o pipefail
 #
 RECEIVES_REQUIRED=46
 TRANSMITS_TOTAL=48
-export HOSTNAME="ajje7lpljulm4-ats.iot.us-east-1.amazonaws.com"
-export CUSTOM_AUTH_HOST=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+export HOSTNAME=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id "unit-test/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 #
 # Process output will be captured in these files.
 #
@@ -64,9 +63,9 @@ then
     echo "###################################################################"
     echo ${0##*/}": running device integration test (websocket/custom auth)"
     echo "###################################################################"
-    $NODE $INT_TEST_DIR/device-integration-test.js -H $CUSTOM_AUTH_HOST -P=wss-custom-auth -t2 --debug=true -T $TEST_TAG | tee $PROC2_OUTFILE &
+    $NODE $INT_TEST_DIR/device-integration-test.js -H $HOSTNAME -P=wss-custom-auth -t2 --debug=true -T $TEST_TAG | tee $PROC2_OUTFILE &
     PROC2_PID=$!
-    $NODE $INT_TEST_DIR/device-integration-test.js -H $CUSTOM_AUTH_HOST -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
+    $NODE $INT_TEST_DIR/device-integration-test.js -H $HOSTNAME -P=wss-custom-auth -t1 --debug=true -T $TEST_TAG | tee $PROC1_OUTFILE &
     PROC1_PID=$!
 else
     echo "###################################################################"

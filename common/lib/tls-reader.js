@@ -86,20 +86,26 @@ module.exports = function(options) {
    // Parse PEM files.  Options ending in 'Path' must be files
    // and will override options which do not end in 'Path'.
 
-   if (filesys.existsSync(options.keyPath)) {
-      options.key = filesys.readFileSync(options.keyPath);
-   } else if (!isUndefined(options.keyPath)) {
-      throw new Error(exceptions.INVALID_KEY_PATH_OPTION);
+   if (!isUndefined(options.keyPath)) {
+      if (filesys.existsSync(options.keyPath)) {
+         options.key = filesys.readFileSync(options.keyPath);
+      } else {
+         throw new Error(exceptions.INVALID_KEY_PATH_OPTION);
+      }
    }
-   if (filesys.existsSync(options.certPath)) {
-      options.cert = filesys.readFileSync(options.certPath);
-   } else if (!isUndefined(options.certPath)) {
-      throw new Error(exceptions.INVALID_CERT_PATH_OPTION);
+   if (!isUndefined(options.certPath)) {
+      if (filesys.existsSync(options.certPath)) {
+         options.cert = filesys.readFileSync(options.certPath);
+      } else {
+         throw new Error(exceptions.INVALID_CERT_PATH_OPTION);
+      }
    }
-   if (filesys.existsSync(options.caPath)) {
-      options.ca = filesys.readFileSync(options.caPath);
-   } else if (!isUndefined(options.caPath)) {
-      throw new Error(exceptions.INVALID_CA_PATH_OPTION);
+   if (!isUndefined(options.caPath)) {
+      if (filesys.existsSync(options.caPath)) {
+         options.ca = filesys.readFileSync(options.caPath);
+      } else {
+         throw new Error(exceptions.INVALID_CA_PATH_OPTION);
+      }
    }
 
    // request certificate from partner
